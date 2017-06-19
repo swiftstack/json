@@ -102,4 +102,17 @@ class JSONEncoderTests: TestCase {
         let json = try? JSONEncoder().encode(Model())
         assertEqual(json, expected)
     }
+    
+    func testEncodable() {
+        let expected = """
+            {"answer":42,"hello":"Hello, World"}
+            """
+        struct Model: Encodable {
+            let answer: Int = 42
+            let hello: String = "Hello, World"
+        }
+        let encodable = Model() as Encodable
+        let json = try? JSONEncoder().encode(encodable)
+        assertEqual(json, expected)
+    }
 }

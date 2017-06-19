@@ -2,10 +2,18 @@ public class JSONDecoder {
     public init() { }
 
     public func decode<T: Decodable>(
-        _ value: T.Type, from json: String
+        _ type: T.Type, from json: String
     ) throws -> T {
         let decoder = try _JSONDecoder(json)
         return try T(from: decoder)
+    }
+    
+    // FIXME: (_ type: Decodable.Type, ...) shadows the generic one
+    public func decode(
+        decodable type: Decodable.Type, from json: String
+    ) throws -> Decodable {
+        let decoder = try _JSONDecoder(json)
+        return try type.init(from: decoder)
     }
 }
 

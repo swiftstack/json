@@ -9,6 +9,12 @@ public struct JSONEncoder {
         try value.encode(to: encoder)
         return encoder.json
     }
+    
+    public func encode(_ value: Encodable) throws -> String {
+        let encoder = _JSONEncoder(reservingCapacity: capacity)
+        try value.encode(to: encoder)
+        return encoder.json
+    }
 }
 
 class _JSONEncoder: Encoder {
