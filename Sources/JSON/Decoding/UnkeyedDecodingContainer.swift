@@ -1,13 +1,13 @@
 class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
-    var codingPath: [CodingKey?] {
+    var codingPath: [CodingKey] {
         return []
     }
 
-    var position: Int
+    var currentIndex: Int
     let array: [JSONValue]
     init(_ array: [JSONValue]) {
         self.array = array
-        self.position = 0
+        self.currentIndex = 0
     }
 
     var count: Int? {
@@ -15,22 +15,22 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     }
 
     var isAtEnd: Bool {
-        return position == array.count
+        return currentIndex == array.count
     }
 
     @inline(__always)
     private func inlinedDecodeIfPresent<T: JSONValueInitializable>(
         _ type: T.Type
     ) throws -> T? {
-        guard let value = T(array[position]) else {
-            if case .null = array[position] {
-                position += 1
+        guard let value = T(array[currentIndex]) else {
+            if case .null = array[currentIndex] {
+                currentIndex += 1
                 return nil
             }
             throw DecodingError.typeMismatch(
-                type, .incompatible(with: array[position]))
+                type, .incompatible(with: array[currentIndex]))
         }
-        position += 1
+        currentIndex += 1
         return value
     }
 
@@ -93,28 +93,28 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     func decodeIfPresent<T>(
         _ type: T.Type
     ) throws -> T? where T : Decodable {
-        let decoder = try _JSONDecoder(array[position])
+        let decoder = try _JSONDecoder(array[currentIndex])
         let value = try T(from: decoder)
-        position += 1
+        currentIndex += 1
         return value
     }
 
     func nestedContainer<NestedKey>(
         keyedBy type: NestedKey.Type
     ) throws -> KeyedDecodingContainer<NestedKey> {
-        guard case .object(let object) = array[position] else {
+        guard case .object(let object) = array[currentIndex] else {
             throw DecodingError.typeMismatch([String : JSONValue].self, nil)
         }
-        position += 1
+        currentIndex += 1
         let container = JSONKeyedDecodingContainer<NestedKey>(object)
         return KeyedDecodingContainer(container)
     }
 
     func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
-        guard case .array(let array) = array[position] else {
+        guard case .array(let array) = array[currentIndex] else {
             throw DecodingError.typeMismatch([JSONValue].self, nil)
         }
-        position += 1
+        currentIndex += 1
         return JSONUnkeyedDecodingContainer(array)
     }
 
@@ -146,7 +146,7 @@ extension JSONUnkeyedDecodingContainer: Decoder {
 
 extension JSONUnkeyedDecodingContainer: SingleValueDecodingContainer {
     func decodeNil() -> Bool {
-        guard case .null = array[position] else {
+        guard case .null = array[currentIndex] else {
             return false
         }
         return true

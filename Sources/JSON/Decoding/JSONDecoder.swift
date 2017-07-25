@@ -18,7 +18,7 @@ public class JSONDecoder {
 }
 
 class _JSONDecoder: Decoder {
-    var codingPath: [CodingKey?] {
+    var codingPath: [CodingKey] {
         return []
     }
     var userInfo: [CodingUserInfoKey : Any] {

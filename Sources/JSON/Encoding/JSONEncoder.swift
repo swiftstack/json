@@ -18,8 +18,12 @@ public struct JSONEncoder {
 }
 
 class _JSONEncoder: Encoder {
-    public var codingPath: [CodingKey?] = []
-    public var userInfo: [CodingUserInfoKey : Any] = [:]
+    public var codingPath: [CodingKey] {
+        return []
+    }
+    public var userInfo: [CodingUserInfoKey : Any] {
+        return [:]
+    }
 
     let storage: Storage
 
