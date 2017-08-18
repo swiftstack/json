@@ -26,4 +26,36 @@ class JSONTests: TestCase {
         assertEqual(model?.answer, 42)
         assertEqual(model?.hello, "Hello, World!")
     }
+
+    func testDecodeEscaped() {
+        let json = """
+            {
+              "answer":42,
+              "hello":"Hello, World!"
+            }
+            """
+        struct Model: Decodable {
+            let answer: Int
+            let hello: String
+        }
+        let model = try? JSON.decode(Model.self, from: json)
+        assertEqual(model?.answer, 42)
+        assertEqual(model?.hello, "Hello, World!")
+    }
+
+    func testDecodeEscapedUnicode() {
+        let json = """
+            {
+              "answer":42,
+              "hello":"\\u3053\\u3093\\u306b\\u3061\\u306f"
+            }
+            """
+        struct Model: Decodable {
+            let answer: Int
+            let hello: String
+        }
+        let model = try? JSON.decode(Model.self, from: json)
+        assertEqual(model?.answer, 42)
+        assertEqual(model?.hello, "こんにちは")
+    }
 }
