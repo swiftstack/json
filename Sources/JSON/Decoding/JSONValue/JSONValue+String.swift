@@ -21,28 +21,26 @@ extension String {
             case "r": result.append("\r")
             case "t": result.append("\t")
             case "\\": result.append("\\")
-            case "u": result.append(try readUnicodeScalar())
+            case "u": result.unicodeScalars.append(try readUnicodeScalar())
             default: throw JSONError.invalidJSON
             }
         }
 
-        func readUnicodeScalar() throws -> String {
+        func readUnicodeScalar() throws -> Unicode.Scalar {
             json.formIndex(after: &index)
             guard index < json.endIndex else {
                 throw JSONError.invalidJSON
             }
             let start = index
-            for _ in 0..<3 {
-                json.formIndex(after: &index)
-                guard index < json.endIndex else {
+            guard json.formIndex(
+                &index, offsetBy: 3, limitedBy: json.endIndex) else {
                     throw JSONError.invalidJSON
-                }
             }
             guard let code = Int(String(json[start...index]), radix: 16),
-                let scalar = UnicodeScalar(code) else {
+                let scalar = Unicode.Scalar(code) else {
                     throw JSONError.invalidJSON
             }
-            return String(scalar)
+            return scalar
         }
 
         var done = false
