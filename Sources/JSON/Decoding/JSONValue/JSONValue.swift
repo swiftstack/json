@@ -8,22 +8,22 @@ public enum JSONValue {
 }
 
 extension JSONValue {
-    public init(from json: String) throws {
-        var index: String.UnicodeScalarView.Index = json.unicodeScalars.startIndex
-        try self.init(from: json.unicodeScalars, at: &index)
+    public init(from json: [UInt8]) throws {
+        var index: Int = json.startIndex
+        try self.init(from: json, at: &index)
     }
 
-    init(from json: String.UnicodeScalarView, at index: inout String.UnicodeScalarView.Index) throws {
+    init(from json: [UInt8], at index: inout Int) throws {
         json.formIndex(from: &index, consuming: .whitespace)
 
-        func ensureValue(_ value: String) throws {
+        func ensureValue(_ value: [UInt8]) throws {
             let distance = json.distance(from: index, to: json.endIndex)
             guard value.count <= distance else {
                 throw JSONError.invalidJSON
             }
             var endIndex = index
             json.formIndex(&endIndex, offsetBy: value.count)
-            guard json[index..<endIndex].starts(with: value.unicodeScalars) else {
+            guard json[index..<endIndex].starts(with: value) else {
                 throw JSONError.invalidJSON
             }
             if distance > value.count {
@@ -35,28 +35,28 @@ extension JSONValue {
         }
 
         switch json[index] {
-        case "{":
+        case .curlyBracketOpen:
             self = .object(try [String : JSONValue](from: json, at: &index))
 
-        case "[":
+        case .bracketOpen:
             self = .array(try [JSONValue](from: json, at: &index))
 
-        case "n":
-            try ensureValue("null")
+        case .n:
+            try ensureValue(.null)
             self = .null
 
-        case "t":
-            try ensureValue("true")
+        case .t:
+            try ensureValue(.true)
             self = .bool(true)
 
-        case "f":
-            try ensureValue("false")
+        case .f:
+            try ensureValue(.false)
             self = .bool(false)
 
-        case "0"..."9", "-":
+        case (.zero)...(.nine), .hyphen:
             self = .number(try Number(from: json, at: &index))
 
-        case "\"":
+        case .quote:
             self = .string(try String(from: json, at: &index))
 
         default:

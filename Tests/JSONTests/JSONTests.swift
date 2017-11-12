@@ -3,21 +3,25 @@ import Test
 
 class JSONTests: TestCase {
     func testEncode() {
-        let expected = """
+        let expected = [UInt8]("""
             {"answer":42,"hello":"Hello, World!"}
-            """
+            """.utf8)
         struct Model: Encodable {
             let answer: Int = 42
             let hello: String = "Hello, World!"
         }
-        let json = try? JSON.encode(Model())
-        assertEqual(json, expected)
+        do {
+            let json = try JSONEncoder().encode(Model())
+            assertEqual(json, expected)
+        } catch {
+            fail(String(describing: error))
+        }
     }
 
     func testDecode() {
-        let json = """
+        let json = [UInt8]("""
             {"answer":42,"hello":"Hello, World!"}
-            """
+            """.utf8)
         struct Model: Decodable {
             let answer: Int
             let hello: String
@@ -28,12 +32,12 @@ class JSONTests: TestCase {
     }
 
     func testDecodeEscaped() {
-        let json = """
+        let json = [UInt8]("""
             {
               "answer":42,
               "hello":"Hello, World!"
             }
-            """
+            """.utf8)
         struct Model: Decodable {
             let answer: Int
             let hello: String
@@ -44,12 +48,12 @@ class JSONTests: TestCase {
     }
 
     func testDecodeEscapedUnicode() {
-        let json = """
+        let json = [UInt8]("""
             {
               "answer":42,
               "hello":"\\u3053\\u3093\\u306b\\u3061\\u306f"
             }
-            """
+            """.utf8)
         struct Model: Decodable {
             let answer: Int
             let hello: String

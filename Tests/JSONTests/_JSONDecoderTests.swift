@@ -4,9 +4,9 @@ import Test
 class _JSONDecoderTests: TestCase {
     func testKeyedContainer() {
         do {
-            let json = """
+            let json = [UInt8]("""
                 {"answer":42}
-                """
+                """.utf8)
             let decoder = try _JSONDecoder(json)
             enum Keys: CodingKey {
                 case answer
@@ -21,7 +21,7 @@ class _JSONDecoderTests: TestCase {
 
     func testUnkeyedContainer() {
         do {
-            let json = "[1,[2],[3],4]"
+            let json = [UInt8]("[1,[2],[3],4]".utf8)
             let decoder = try _JSONDecoder(json)
             var container = try decoder.unkeyedContainer()
             let int1 = try container.decode(Int.self)
@@ -41,7 +41,7 @@ class _JSONDecoderTests: TestCase {
 
     func testSingleValueContainer() {
         do {
-            let json = "true"
+            let json = [UInt8]("true".utf8)
             let decoder = try _JSONDecoder(json)
             let container = try decoder.singleValueContainer()
             let bool = try container.decode(Bool.self)

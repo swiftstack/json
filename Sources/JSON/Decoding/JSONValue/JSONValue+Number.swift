@@ -8,57 +8,67 @@ extension JSONValue {
 
 extension JSONValue.Number {
     init(
-        from json: String.UnicodeScalarView,
-        at index: inout String.UnicodeScalarView.Index
+        from json: [UInt8],
+        at index: inout Int
     ) throws {
         guard index < json.endIndex else {
             throw JSONError.invalidJSON
         }
-        let startIndex = index
 
-        var negative = false
-        if json[index] == "-" {
-            negative = true
+        var isNegative = false
+        if json[index] == .hyphen {
+            isNegative = true
             json.formIndex(after: &index)
         }
 
-        var done = false
-        var integer = true
-        while !done, index < json.endIndex {
+        var isInteger = true
+
+        var integer: UInt = 0
+        var fract = 0
+        var divider = 1
+
+        loop: while index < json.endIndex {
             switch json[index] {
-            case "0"..."9":
+            case (.zero)...(.nine):
+                switch isInteger {
+                case true:
+                    integer *= 10
+                    integer += UInt(json[index] - .zero)
+                case false:
+                    fract *= 10
+                    fract += Int(json[index] - .zero)
+                    divider *= 10
+                }
                 json.formIndex(after: &index)
 
-            case ".":
-                guard integer else {
+            case .dot:
+                guard isInteger else {
                     throw JSONError.invalidJSON
                 }
-                integer = false
+                isInteger = false
                 json.formIndex(after: &index)
 
             case _ where json[index].contained(in: .terminator):
-                done = true
+                break loop
 
             default:
                 throw JSONError.invalidJSON
             }
         }
 
-        if integer {
-            if negative {
-                guard let value = Int(String(json[startIndex..<index])) else {
+        if isInteger {
+            if isNegative {
+                guard integer <= (UInt(Int.max)+1) else {
                     throw JSONError.invalidJSON
                 }
-                self = .int(value)
+                self = .int(-Int(integer))
             } else {
-                guard let value = UInt(String(json[startIndex..<index])) else {
-                    throw JSONError.invalidJSON
-                }
-                self = .uint(value)
+                self = .uint(integer)
             }
         } else {
-            guard let value = Double(String(json[startIndex..<index])) else {
-                throw JSONError.invalidJSON
+            var value = Double(integer) + Double(fract) / Double(divider)
+            if isNegative {
+                value = -value
             }
             self = .double(value)
         }

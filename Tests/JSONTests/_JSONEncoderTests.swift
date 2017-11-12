@@ -3,9 +3,9 @@ import Test
 
 class _JSONEncoderTests: TestCase {
     func testKeyedContainer() {
-        let expected = """
+        let expected = [UInt8]("""
             {"answer":42}
-            """
+            """.utf8)
         let encoder = _JSONEncoder()
         enum Keys: CodingKey {
             case answer
@@ -16,7 +16,7 @@ class _JSONEncoderTests: TestCase {
     }
 
     func testUnkeyedContainer() {
-        let expected = "[1,[2],[3],4]"
+        let expected = [UInt8]("[1,[2],[3],4]".utf8)
         let encoder = _JSONEncoder()
         var container = encoder.unkeyedContainer()
         try? container.encode(1)
@@ -29,7 +29,7 @@ class _JSONEncoderTests: TestCase {
     }
 
     func testSingleValueContainer() {
-        let expected = "true"
+        let expected = [UInt8]("true".utf8)
         let encoder = _JSONEncoder()
         var container = encoder.singleValueContainer()
         try? container.encode(true)

@@ -4,7 +4,7 @@ import Test
 class UnkeyedEncodingContainerTests: TestCase {
     func testUnkeyedContainer() {
         do {
-            let expected = "[1,2]"
+            let expected = [UInt8]("[1,2]".utf8)
             let encoder = _JSONEncoder()
             var unkeyedContainer = encoder.unkeyedContainer()
             try unkeyedContainer.encode(1)
@@ -17,7 +17,7 @@ class UnkeyedEncodingContainerTests: TestCase {
 
     func testNestedUnkeyedContainer() {
         do {
-            let expected = "[[1],[2]]"
+            let expected = [UInt8]("[[1],[2]]".utf8)
             let encoder = _JSONEncoder()
             var unkeyedContainer = encoder.unkeyedContainer()
             var nested1 = unkeyedContainer.nestedUnkeyedContainer()

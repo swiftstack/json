@@ -1,9 +1,9 @@
 extension Dictionary where Key == String, Value == JSONValue {
     init(
-        from json: String.UnicodeScalarView,
-        at index: inout String.UnicodeScalarView.Index
+        from json: [UInt8],
+        at index: inout Int
     ) throws {
-        guard json[index] == "{" else {
+        guard json[index] == .curlyBracketOpen else {
             throw JSONError.invalidJSON
         }
         json.formIndex(after: &index)
@@ -13,19 +13,19 @@ extension Dictionary where Key == String, Value == JSONValue {
         while !done, index < json.endIndex {
             json.formIndex(from: &index, consuming: .whitespace)
             switch json[index] {
-            case "}":
+            case .curlyBracketClose:
                 json.formIndex(after: &index)
                 done = true
-            case "\"":
+            case .quote:
                 let key = try String(from: json, at: &index)
                 json.formIndex(from: &index, consuming: .whitespace)
-                guard json[index] == ":" else {
+                guard json[index] == .colon else {
                     throw JSONError.invalidJSON
                 }
                 json.formIndex(after: &index)
                 json.formIndex(from: &index, consuming: .whitespace)
                 result[key] = try JSONValue(from: json, at: &index)
-            case ",":
+            case .comma:
                 json.formIndex(after: &index)
             default:
                 throw JSONError.invalidJSON

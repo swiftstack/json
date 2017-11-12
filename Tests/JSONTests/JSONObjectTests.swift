@@ -4,7 +4,7 @@ import Test
 class JSONObjectTests: TestCase {
     func testNull() {
         do {
-            let null = try JSONValue(from: "null")
+            let null = try JSONValue(from: [UInt8]("null".utf8))
             assertEqual(null, .null)
         } catch {
             fail(String(describing: error))
@@ -13,10 +13,10 @@ class JSONObjectTests: TestCase {
 
     func testBool() {
         do {
-            let jsonTrue = try JSONValue(from: "true")
+            let jsonTrue = try JSONValue(from: [UInt8]("true".utf8))
             assertEqual(jsonTrue, .bool(true))
 
-            let jsonFalse = try JSONValue(from: "false")
+            let jsonFalse = try JSONValue(from: [UInt8]("false".utf8))
             assertEqual(jsonFalse, .bool(false))
         } catch {
             fail(String(describing: error))
@@ -25,13 +25,13 @@ class JSONObjectTests: TestCase {
 
     func testNumber() {
         do {
-            let uint = try JSONValue(from: "42")
+            let uint = try JSONValue(from: [UInt8]("42".utf8))
             assertEqual(uint, .number(.uint(42)))
 
-            let int = try JSONValue(from: "-42")
+            let int = try JSONValue(from: [UInt8]("-42".utf8))
             assertEqual(int, .number(.int(-42)))
 
-            let double = try JSONValue(from: "-42.42")
+            let double = try JSONValue(from: [UInt8]("-42.42".utf8))
             assertEqual(double, .number(.double(-42.42)))
         } catch {
             fail(String(describing: error))
@@ -40,16 +40,16 @@ class JSONObjectTests: TestCase {
 
     func testString() {
         do {
-            let string = try JSONValue(from: "\"string\"")
+            let string = try JSONValue(from: [UInt8]("\"string\"".utf8))
             assertEqual(string, .string("string"))
 
-            let escapedString = try JSONValue(from: "\"string\\r\\n\"")
+            let escapedString = try JSONValue(from: [UInt8]("\"string\\r\\n\"".utf8))
             assertEqual(escapedString, .string("string\r\n"))
 
-            assertThrowsError(try JSONValue(from: "\"string\r\n\""))
+            assertThrowsError(try JSONValue(from: [UInt8]("\"string\r\n\"".utf8)))
 
             // TODO:
-            // try JSONObject(from: "\"\\uD834\\udd1E\"")
+            // try JSONObject(from: [UInt8]("\"\\uD834\\udd1E\"".utf8))
         } catch {
             fail(String(describing: error))
         }
@@ -57,27 +57,27 @@ class JSONObjectTests: TestCase {
 
     func testObject() {
         do {
-            let empty = try JSONValue(from: "{}")
+            let empty = try JSONValue(from: [UInt8]("{}".utf8))
             assertEqual(empty, .object([:]))
 
-            let simple = try JSONValue(from: """
+            let simple = try JSONValue(from: [UInt8]("""
                 {"key":"value"}
-                """)
+                """.utf8))
             assertEqual(simple, .object(["key" : .string("value")]))
 
-            let nested = try JSONValue(from: """
+            let nested = try JSONValue(from: [UInt8]("""
                 {"o":{"k":"v"}}
-                """)
+                """.utf8))
             assertEqual(nested, .object(["o":.object(["k" : .string("v")])]))
 
-            let whitespace = try JSONValue(from: """
+            let whitespace = try JSONValue(from: [UInt8]("""
                 {"key" : "value"}
-                """)
+                """.utf8))
             assertEqual(whitespace, .object(["key" : .string("value")]))
 
-            let separator = try JSONValue(from: """
+            let separator = try JSONValue(from: [UInt8]("""
                 {"k1":"v1", "k2":"v2"}
-                """)
+                """.utf8))
             let expected: JSONValue = .object(
                 ["k1" : .string("v1"), "k2" : .string("v2")])
             assertEqual(separator, expected)
@@ -88,15 +88,15 @@ class JSONObjectTests: TestCase {
 
     func testArray() {
         do {
-            let empty = try JSONValue(from: "[]")
+            let empty = try JSONValue(from: [UInt8]("[]".utf8))
             assertEqual(empty, .array([]))
 
-            let simple = try JSONValue(from: "[1,2]")
+            let simple = try JSONValue(from: [UInt8]("[1,2]".utf8))
             assertEqual(simple, .array([.number(.uint(1)), .number(.uint(2))]))
 
-            let strings = try JSONValue(from: """
+            let strings = try JSONValue(from: [UInt8]("""
                 ["one", "two"]
-                """)
+                """.utf8))
             assertEqual(strings, .array([.string("one"), .string("two")]))
 
         } catch {
@@ -106,18 +106,18 @@ class JSONObjectTests: TestCase {
 
     func testNested() {
         do {
-            let objectInArray = try JSONValue(from: """
+            let objectInArray = try JSONValue(from: [UInt8]("""
                 ["one", 2, {"key": false}]
-                """)
+                """.utf8))
             assertEqual(objectInArray, .array([
                 .string("one"),
                 .number(.uint(2)),
                 .object(["key": .bool(false)])
                 ]))
 
-            let arrayInObject = try JSONValue(from: """
+            let arrayInObject = try JSONValue(from: [UInt8]("""
                 {"values" : [1,true]}
-                """)
+                """.utf8))
             assertEqual(arrayInObject, .object(
                 ["values": .array([.number(.uint(1)), .bool(true)])]
                 ))

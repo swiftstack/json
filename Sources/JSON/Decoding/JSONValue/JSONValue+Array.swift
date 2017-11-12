@@ -1,9 +1,9 @@
 extension Array where Element == JSONValue {
     init(
-        from json: String.UnicodeScalarView,
-        at index: inout String.UnicodeScalarView.Index
+        from json: [UInt8],
+        at index: inout Int
     ) throws {
-        guard json[index] == "[" else {
+        guard json[index] == .bracketOpen else {
             throw JSONError.invalidJSON
         }
         json.formIndex(after: &index)
@@ -13,10 +13,10 @@ extension Array where Element == JSONValue {
         while !done, index < json.endIndex {
             json.formIndex(from: &index, consuming: .whitespace)
             switch json[index] {
-            case "]":
+            case .bracketClose:
                 json.formIndex(after: &index)
                 done = true
-            case ",":
+            case .comma:
                 json.formIndex(after: &index)
             default:
                 result.append(try JSONValue(from: json, at: &index))
