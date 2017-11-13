@@ -10,27 +10,12 @@ extension Array where Element == UInt8 {
 }
 
 extension Set where Element == UInt8 {
-    static let control: Set<UInt8> = [
-        UInt8(ascii: "\r"),
-        UInt8(ascii: "\n"),
-        UInt8(ascii: "\t")
-    ]
+    static let control: Set<UInt8> = [.cr, .lf, .tab]
 
-    static var whitespace: Set<UInt8> = [
-        UInt8(ascii: " "),
-        UInt8(ascii: "\r"),
-        UInt8(ascii: "\n"),
-        UInt8(ascii: "\t")
-    ]
+    static var whitespace: Set<UInt8> = [.whitespace, .cr, .lf, .tab]
 
     static let terminator: Set<UInt8> = [
-        UInt8(ascii: " "),
-        UInt8(ascii: "\r"),
-        UInt8(ascii: "\n"),
-        UInt8(ascii: "\t"),
-        UInt8(ascii: ","),
-        UInt8(ascii: "}"),
-        UInt8(ascii: "]")
+        .whitespace, .cr, .lf, .tab, .comma, .curlyBracketClose, .bracketClose
     ]
 }
 

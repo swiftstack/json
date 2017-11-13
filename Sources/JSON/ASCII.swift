@@ -7,6 +7,7 @@ extension UInt8 {
     static let quote = UInt8(ascii: "\"")
     static let hyphen = UInt8(ascii: "-")
     static let backslash = UInt8(ascii: "\\")
+    static let whitespace = UInt8(ascii: " ")
 
     static let cr = UInt8(ascii: "\r")
     static let lf = UInt8(ascii: "\n")
