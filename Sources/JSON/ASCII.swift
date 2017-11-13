@@ -8,11 +8,16 @@ extension UInt8 {
     static let hyphen = UInt8(ascii: "-")
     static let backslash = UInt8(ascii: "\\")
 
+    static let cr = UInt8(ascii: "\r")
+    static let lf = UInt8(ascii: "\n")
+    static let tab = UInt8(ascii: "\t")
+
     static let bracketOpen = UInt8(ascii: "[")
     static let bracketClose = UInt8(ascii: "]")
     static let curlyBracketOpen = UInt8(ascii: "{")
     static let curlyBracketClose = UInt8(ascii: "}")
 
+    static let b = UInt8(ascii: "b")
     static let f = UInt8(ascii: "f")
     static let n = UInt8(ascii: "n")
     static let r = UInt8(ascii: "r")

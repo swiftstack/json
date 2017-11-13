@@ -46,8 +46,8 @@ class _JSONEncoder: Encoder {
 
     func openContainer(_ type: ContainerType) {
         switch type {
-        case .keyed: storage.write("{")
-        case .unkeyed: storage.write("[")
+        case .keyed: storage.write(.curlyBracketOpen)
+        case .unkeyed: storage.write(.bracketOpen)
         case .single: break
         }
         openedContainers.append(type)
@@ -56,8 +56,8 @@ class _JSONEncoder: Encoder {
     func closeContainer() {
         if let type = openedContainers.popLast() {
             switch type {
-            case .keyed: storage.write("}")
-            case .unkeyed: storage.write("]")
+            case .keyed: storage.write(.curlyBracketClose)
+            case .unkeyed: storage.write(.bracketClose)
             case .single: break
             }
         }
@@ -94,7 +94,7 @@ class _JSONEncoder: Encoder {
 
 extension _JSONEncoder {
     func encodeNil() throws {
-        storage.write("null")
+        storage.write(.null)
     }
 
     func encode(_ value: Bool) throws {
@@ -150,29 +150,45 @@ extension _JSONEncoder {
     }
 
     func encode(_ value: String) throws {
-        storage.write("\"")
-
-        @inline(__always)
-        func write(prefix: String, value scalar: Unicode.Scalar) {
-            storage.write(prefix)
-            storage.write(String(scalar.value, radix: 16))
-        }
+        storage.write(.quote)
 
         for scalar in value.unicodeScalars {
             switch scalar {
-            case "\"": storage.write("\\\"")
-            case "\\": storage.write("\\\\")
-            case "\n": storage.write("\\n")
-            case "\r": storage.write("\\r")
-            case "\t": storage.write("\\t")
-            case "\u{8}": storage.write("\\b")
-            case "\u{c}": storage.write("\\f")
-            case "\u{0}"..."\u{f}": write(prefix: "\\u000", value: scalar)
-            case "\u{10}"..."\u{1f}": write(prefix: "\\u00", value: scalar)
-            default: storage.write(String(scalar))
+            case "\"":
+                storage.write(.backslash)
+                storage.write(.quote)
+            case "\\":
+                storage.write(.backslash)
+                storage.write(.backslash)
+            case "\n":
+                storage.write(.backslash)
+                storage.write(.n)
+            case "\r":
+                storage.write(.backslash)
+                storage.write(.r)
+            case "\t":
+                storage.write(.backslash)
+                storage.write(.t)
+            case "\u{8}":
+                storage.write(.backslash)
+                storage.write(.b)
+            case "\u{c}":
+                storage.write(.backslash)
+                storage.write(.f)
+            case "\u{0}"..."\u{f}":
+                storage.write("\\u000")
+                storage.write(String(scalar.value, radix: 16))
+            case "\u{10}"..."\u{1f}":
+                storage.write("\\u00")
+                storage.write(String(scalar.value, radix: 16))
+            default:
+                guard let utf8 = UTF8.encode(scalar) else {
+                    throw JSONError.invalidJSON
+                }
+                utf8.forEach(storage.write)
             }
         }
 
-        storage.write("\"")
+        storage.write(.quote)
     }
 }
