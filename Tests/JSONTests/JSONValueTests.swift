@@ -1,7 +1,7 @@
 import Test
 @testable import JSON
 
-class JSONObjectTests: TestCase {
+class JSONValueTests: TestCase {
     func testNull() {
         do {
             let null = try JSONValue(from: [UInt8]("null".utf8))
@@ -48,8 +48,9 @@ class JSONObjectTests: TestCase {
 
             assertThrowsError(try JSONValue(from: [UInt8]("\"string\r\n\"".utf8)))
 
-            // TODO:
-            // try JSONObject(from: [UInt8]("\"\\uD834\\udd1E\"".utf8))
+            let json = [UInt8]("\"\\u3053\\u3093\\u306b\\u3061\\u306f\"".utf8)
+            let escapedUnicode = try JSONValue(from: json)
+            assertEqual(escapedUnicode, .string("こんにちは"))
         } catch {
             fail(String(describing: error))
         }
