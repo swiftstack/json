@@ -1,23 +1,44 @@
+import Stream
+
 public struct JSONEncoder {
-    let capacity: Int
-    public init(reservingCapacity capacity: Int = 256) {
-        self.capacity = capacity
+    public init() {}
+
+    public func encode<Model, Writer>(_ value: Model, to writer: Writer) throws
+        where Model: Encodable, Writer: StreamWriter
+    {
+        let encoder = _JSONEncoder(writer)
+        try value.encode(to: encoder)
+        try encoder.closeContainers(downTo: 0)
     }
 
-    public func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
-        let encoder = _JSONEncoder(reservingCapacity: capacity)
+    public func encode<Writer>(_ value: Encodable, to writer: Writer) throws
+        where Writer: StreamWriter
+    {
+        let encoder = _JSONEncoder(writer)
         try value.encode(to: encoder)
-        return encoder.json
-    }
-    
-    public func encode(_ value: Encodable) throws -> [UInt8] {
-        let encoder = _JSONEncoder(reservingCapacity: capacity)
-        try value.encode(to: encoder)
-        return encoder.json
+        try encoder.closeContainers(downTo: 0)
     }
 }
 
-class _JSONEncoder: Encoder {
+extension JSONEncoder {
+    public func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
+        let stream = OutputByteStream()
+        let encoder = _JSONEncoder(stream)
+        try value.encode(to: encoder)
+        try encoder.closeContainers(downTo: 0)
+        return stream.bytes
+    }
+
+    public func encode(_ value: Encodable) throws -> [UInt8] {
+        let stream = OutputByteStream()
+        let encoder = _JSONEncoder(stream)
+        try value.encode(to: encoder)
+        try encoder.closeContainers(downTo: 0)
+        return stream.bytes
+    }
+}
+
+class _JSONEncoder<Writer: StreamWriter>: Encoder {
     public var codingPath: [CodingKey] {
         return []
     }
@@ -25,15 +46,10 @@ class _JSONEncoder: Encoder {
         return [:]
     }
 
-    let storage: Storage
+    let storage: Writer
 
-    var json: [UInt8] {
-        closeContainers(downTo: 0)
-        return storage.json
-    }
-
-    init(reservingCapacity capacity: Int = 256) {
-        self.storage = Storage(reservingCapacity: capacity)
+    init(_ writer: Writer) {
+        self.storage = writer
     }
 
     enum ContainerType {
@@ -44,151 +60,163 @@ class _JSONEncoder: Encoder {
 
     var openedContainers = ContiguousArray<ContainerType>()
 
-    func openContainer(_ type: ContainerType) {
+    func openContainer(_ type: ContainerType) throws {
         switch type {
-        case .keyed: storage.write(.curlyBracketOpen)
-        case .unkeyed: storage.write(.bracketOpen)
+        case .keyed: try storage.write(.curlyBracketOpen)
+        case .unkeyed: try storage.write(.bracketOpen)
         case .single: break
         }
         openedContainers.append(type)
     }
 
-    func closeContainer() {
+    func closeContainer() throws {
         if let type = openedContainers.popLast() {
             switch type {
-            case .keyed: storage.write(.curlyBracketClose)
-            case .unkeyed: storage.write(.bracketClose)
+            case .keyed: try storage.write(.curlyBracketClose)
+            case .unkeyed: try storage.write(.bracketClose)
             case .single: break
             }
         }
     }
 
-    func closeContainers(downTo index: Int) {
+    func closeContainers(downTo index: Int) throws {
         precondition(openedContainers.count >= index, "invalid stack")
         guard openedContainers.count > index else {
             return
         }
         while openedContainers.count > index {
-            closeContainer()
+            try closeContainer()
         }
     }
 
     public func container<Key>(
-        keyedBy type: Key.Type
-    ) -> KeyedEncodingContainer<Key> {
-        openContainer(.keyed)
-        let container = JSONKeyedEncodingContainer<Key>(self)
-        return KeyedEncodingContainer(container)
+        keyedBy type: Key.Type) -> KeyedEncodingContainer<Key>
+    {
+        do {
+            try openContainer(.keyed)
+            let container = JSONKeyedEncodingContainer<Key, Writer>(self)
+            return KeyedEncodingContainer(container)
+        } catch {
+            return KeyedEncodingContainer(KeyedEncodingContainerError())
+        }
     }
 
     public func unkeyedContainer() -> UnkeyedEncodingContainer {
-        openContainer(.unkeyed)
-        return JSONUnkeyedEncodingContainer(self)
+        do {
+            try openContainer(.unkeyed)
+            return JSONUnkeyedEncodingContainer(self)
+        } catch {
+            return UnkeyedEncodingContainerError()
+        }
     }
 
     public func singleValueContainer() -> SingleValueEncodingContainer {
-        openContainer(.single)
-        return JSONSingleValueEncodingContainer(self)
+        do {
+            try openContainer(.single)
+            return JSONSingleValueEncodingContainer(self)
+        } catch {
+            return SingleValueEncodingContainerError()
+        }
     }
 }
 
 extension _JSONEncoder {
     func encodeNil() throws {
-        storage.write(.null)
+        try storage.write(.null)
     }
 
     func encode(_ value: Bool) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Int) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Int8) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Int16) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Int32) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Int64) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt8) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt16) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt32) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt64) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Float) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: Double) throws {
-        storage.write(String(describing: value))
+        try storage.write(String(describing: value))
     }
 
     func encode(_ value: String) throws {
-        storage.write(.quote)
+        try storage.write(.quote)
 
         for scalar in value.unicodeScalars {
             switch scalar {
             case "\"":
-                storage.write(.backslash)
-                storage.write(.quote)
+                try storage.write(.backslash)
+                try storage.write(.quote)
             case "\\":
-                storage.write(.backslash)
-                storage.write(.backslash)
+                try storage.write(.backslash)
+                try storage.write(.backslash)
             case "\n":
-                storage.write(.backslash)
-                storage.write(.n)
+                try storage.write(.backslash)
+                try storage.write(.n)
             case "\r":
-                storage.write(.backslash)
-                storage.write(.r)
+                try storage.write(.backslash)
+                try storage.write(.r)
             case "\t":
-                storage.write(.backslash)
-                storage.write(.t)
+                try storage.write(.backslash)
+                try storage.write(.t)
             case "\u{8}":
-                storage.write(.backslash)
-                storage.write(.b)
+                try storage.write(.backslash)
+                try storage.write(.b)
             case "\u{c}":
-                storage.write(.backslash)
-                storage.write(.f)
+                try storage.write(.backslash)
+                try storage.write(.f)
             case "\u{0}"..."\u{f}":
-                storage.write("\\u000")
-                storage.write(String(scalar.value, radix: 16))
+                try storage.write("\\u000")
+                try storage.write(String(scalar.value, radix: 16))
             case "\u{10}"..."\u{1f}":
-                storage.write("\\u00")
-                storage.write(String(scalar.value, radix: 16))
+                try storage.write("\\u00")
+                try storage.write(String(scalar.value, radix: 16))
             default:
                 guard let utf8 = UTF8.encode(scalar) else {
                     throw JSONError.invalidJSON
                 }
-                utf8.forEach(storage.write)
+                try utf8.forEach(storage.write)
             }
         }
 
-        storage.write(.quote)
+        try storage.write(.quote)
     }
 }

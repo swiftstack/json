@@ -1,4 +1,6 @@
-struct JSONKeyedEncodingContainer<K : CodingKey>
+import Stream
+
+struct JSONKeyedEncodingContainer<K : CodingKey, Writer: StreamWriter>
 : KeyedEncodingContainerProtocol {
     typealias Key = K
 
@@ -6,34 +8,34 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
         return []
     }
 
-    let encoder: _JSONEncoder
+    let encoder: _JSONEncoder<Writer>
     let nestingLevel: Int
 
-    init(_ encoder: _JSONEncoder) {
+    init(_ encoder: _JSONEncoder<Writer>) {
         self.encoder = encoder
         nestingLevel = encoder.openedContainers.count
     }
 
     var hasValues = false
-    mutating func writeCommaIfNeeded() {
+    mutating func writeCommaIfNeeded() throws {
         guard _slowPath(hasValues) else {
             hasValues = true
             return
         }
-        encoder.storage.write(.comma)
+        try encoder.storage.write(.comma)
     }
 
-    mutating func writeKey(_ key: String) {
-        encoder.storage.write(.quote)
-        encoder.storage.write(key)
-        encoder.storage.write(.quote)
-        encoder.storage.write(.colon)
+    mutating func writeKey(_ key: String) throws {
+        try encoder.storage.write(.quote)
+        try encoder.storage.write(key)
+        try encoder.storage.write(.quote)
+        try encoder.storage.write(.colon)
     }
 
     var hasNested = false
-    mutating func closeNestedIfNeeded() {
+    mutating func closeNestedIfNeeded() throws {
         if hasNested {
-            encoder.closeContainers(downTo: nestingLevel)
+            try encoder.closeContainers(downTo: nestingLevel)
             hasNested = false
         }
     }
@@ -44,144 +46,162 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
     }
 
     mutating func encode(_ value: Bool, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Int, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Int8, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Int16, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Int32, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Int64, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: UInt, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: UInt8, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: UInt16, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: UInt32, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: UInt64, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Float, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: Double, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode(_ value: String, forKey key: K) throws {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         try encoder.encode(value)
     }
 
     mutating func encode<T>(
         _ value: T, forKey key: K
     ) throws where T : Encodable {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
         hasNested = true
         try value.encode(to: encoder)
     }
 
     mutating func nestedContainer<NestedKey>(
-        keyedBy keyType: NestedKey.Type, forKey key: K
-    ) -> KeyedEncodingContainer<NestedKey> {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        hasNested = true
-        return encoder.container(keyedBy: keyType)
+        keyedBy keyType: NestedKey.Type,
+        forKey key: K) -> KeyedEncodingContainer<NestedKey>
+    {
+        do {
+            try closeNestedIfNeeded()
+            try writeCommaIfNeeded()
+            hasNested = true
+            return encoder.container(keyedBy: keyType)
+        } catch {
+            let container = KeyedEncodingContainerError<NestedKey>()
+            return KeyedEncodingContainer(container)
+        }
     }
 
     mutating func nestedUnkeyedContainer(
-        forKey key: K
-    ) -> UnkeyedEncodingContainer {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
-        hasNested = true
-        return encoder.unkeyedContainer()
+        forKey key: K) -> UnkeyedEncodingContainer
+    {
+        do {
+            try closeNestedIfNeeded()
+            try writeCommaIfNeeded()
+            try writeKey(key.stringValue)
+            hasNested = true
+            return encoder.unkeyedContainer()
+        } catch {
+            return UnkeyedEncodingContainerError()
+        }
     }
 
     mutating func superEncoder() -> Encoder {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        hasNested = true
-        return encoder
+        do {
+            try closeNestedIfNeeded()
+            try writeCommaIfNeeded()
+            hasNested = true
+            return encoder
+        } catch {
+            return EncoderError()
+        }
     }
 
     mutating func superEncoder(forKey key: K) -> Encoder {
-        closeNestedIfNeeded()
-        writeCommaIfNeeded()
-        writeKey(key.stringValue)
-        hasNested = true
-        return encoder
+        do {
+            try closeNestedIfNeeded()
+            try writeCommaIfNeeded()
+            try writeKey(key.stringValue)
+            hasNested = true
+            return encoder
+        } catch {
+            return EncoderError()
+        }
     }
 }
