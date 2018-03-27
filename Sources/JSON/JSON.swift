@@ -1,6 +1,14 @@
 import Stream
 
 public struct JSON {
+    public static func encode<Model: Encodable, Writer: StreamWriter>(
+        _ value: Model,
+        to stream: Writer) throws
+    {
+        let encoder = JSONEncoder()
+        try encoder.encode(value, to: stream)
+    }
+
     public static func decode<Model: Decodable, Reader: StreamReader>(
         _ type: Model.Type,
         from stream: Reader) throws -> Model
