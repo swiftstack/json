@@ -42,7 +42,7 @@ struct JSONKeyedEncodingContainer<K : CodingKey, Writer: StreamWriter>
 
     mutating func encodeNil(forKey key: K) throws {
         // TODO:
-        fatalError()
+        throw JSONError.cantEncodeNil
     }
 
     mutating func encode(_ value: Bool, forKey key: K) throws {

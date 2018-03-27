@@ -53,7 +53,7 @@ struct JSONKeyedDecodingContainer<K : CodingKey>
 
     func decodeNil(forKey key: K) throws -> Bool {
         // TODO:
-        fatalError()
+        throw JSONError.cantDecodeNil
     }
 
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {

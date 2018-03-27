@@ -34,8 +34,7 @@ struct JSONUnkeyedEncodingContainer<Writer: StreamWriter>
     }
 
     mutating func encodeNil() throws {
-        // TODO:
-        fatalError()
+        try encoder.encode("null")
     }
 
     mutating func encode(_ value: Int) throws {
