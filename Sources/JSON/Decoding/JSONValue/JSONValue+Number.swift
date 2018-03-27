@@ -1,3 +1,6 @@
+import Stream
+import Platform
+
 extension JSONValue {
     public enum Number {
         case int(Int)
@@ -7,70 +10,39 @@ extension JSONValue {
 }
 
 extension JSONValue.Number {
-    init(
-        from json: [UInt8],
-        at index: inout Int
-    ) throws {
-        guard index < json.endIndex else {
-            throw JSONError.invalidJSON
-        }
-
-        var isNegative = false
-        if json[index] == .hyphen {
-            isNegative = true
-            json.formIndex(after: &index)
-        }
-
+    init<T: StreamReader>(from stream: T) throws {
+        let isNegative = try stream.consume(.hyphen) ? true : false
         var isInteger = true
 
-        var integer: UInt = 0
-        var fract = 0
-        var divider = 1
+        var string = [UInt8]()
 
-        loop: while index < json.endIndex {
-            switch json[index] {
-            case (.zero)...(.nine):
-                switch isInteger {
-                case true:
-                    integer *= 10
-                    integer += UInt(json[index] - .zero)
-                case false:
-                    fract *= 10
-                    fract += Int(json[index] - .zero)
-                    divider *= 10
-                }
-                json.formIndex(after: &index)
-
-            case .dot:
-                guard isInteger else {
-                    throw JSONError.invalidJSON
-                }
-                isInteger = false
-                json.formIndex(after: &index)
-
-            case _ where json[index].contained(in: .terminator):
-                break loop
-
-            default:
-                throw JSONError.invalidJSON
-            }
+        try stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
+            string.append(contentsOf: bytes)
         }
 
-        if isInteger {
-            if isNegative {
-                guard integer <= (UInt(Int.max)+1) else {
-                    throw JSONError.invalidJSON
-                }
-                self = .int(-Int(integer))
-            } else {
-                self = .uint(integer)
+        if (try? stream.consume(.dot)) ?? false {
+            isInteger = false
+            string.append(.dot)
+            try stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
+                string.append(contentsOf: bytes)
             }
-        } else {
-            var value = Double(integer) + Double(fract) / Double(divider)
-            if isNegative {
-                value = -value
+        }
+        string.append(0)
+
+        let pointer = UnsafeRawPointer(string)
+            .assumingMemoryBound(to: Int8.self)
+
+        switch isNegative {
+        case true:
+            switch isInteger {
+            case true: self = .int(-strtol(pointer, nil, 10))
+            case false: self = .double(-strtod(pointer, nil))
             }
-            self = .double(value)
+        case false:
+            switch isInteger {
+            case true: self = .uint(strtoul(pointer, nil, 10))
+            case false: self = .double(strtod(pointer, nil))
+            }
         }
     }
 }

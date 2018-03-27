@@ -1,3 +1,5 @@
+import Stream
+
 public enum JSONValue {
     case null
     case bool(Bool)
@@ -8,38 +10,21 @@ public enum JSONValue {
 }
 
 extension JSONValue {
-    public init(from json: [UInt8]) throws {
-        var index: Int = json.startIndex
-        try self.init(from: json, at: &index)
-    }
-
-    init(from json: [UInt8], at index: inout Int) throws {
-        json.formIndex(from: &index, consuming: .whitespace)
+    init<T: StreamReader>(from stream: T) throws {
+        try stream.consume(set: .whitespace)
 
         func ensureValue(_ value: [UInt8]) throws {
-            let distance = json.distance(from: index, to: json.endIndex)
-            guard value.count <= distance else {
+            guard try stream.consume(sequence: value) else {
                 throw JSONError.invalidJSON
             }
-            var endIndex = index
-            json.formIndex(&endIndex, offsetBy: value.count)
-            guard json[index..<endIndex].starts(with: value) else {
-                throw JSONError.invalidJSON
-            }
-            if distance > value.count {
-                guard json[endIndex].contained(in: .terminator) else {
-                    throw JSONError.invalidJSON
-                }
-            }
-            index = endIndex
         }
 
-        switch json[index] {
+        switch try stream.peek() {
         case .curlyBracketOpen:
-            self = .object(try [String : JSONValue](from: json, at: &index))
+            self = .object(try [String : JSONValue](from: stream))
 
         case .bracketOpen:
-            self = .array(try [JSONValue](from: json, at: &index))
+            self = .array(try [JSONValue](from: stream))
 
         case .n:
             try ensureValue(.null)
@@ -54,10 +39,10 @@ extension JSONValue {
             self = .bool(false)
 
         case (.zero)...(.nine), .hyphen:
-            self = .number(try Number(from: json, at: &index))
+            self = .number(try Number(from: stream))
 
         case .quote:
-            self = .string(try String(from: json, at: &index))
+            self = .string(try String(from: stream))
 
         default:
             throw JSONError.invalidJSON

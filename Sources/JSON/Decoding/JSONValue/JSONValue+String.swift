@@ -1,21 +1,15 @@
+import Stream
+
 extension String {
-    init(
-        from json: [UInt8],
-        at index: inout Int
-    ) throws {
-        guard json[index] == .quote else {
+    init<T: StreamReader>(from stream: T) throws {
+        guard try stream.consume(.quote) else {
             throw JSONError.invalidJSON
         }
-        json.formIndex(after: &index)
 
         var result = ""
 
         func readEscaped() throws {
-            json.formIndex(after: &index)
-            guard index < json.endIndex else {
-                throw JSONError.invalidJSON
-            }
-            switch json[index] {
+            switch try stream.read(UInt8.self) {
             case .quote: result.append("\"")
             case .n: result.append("\n")
             case .r: result.append("\r")
@@ -27,25 +21,20 @@ extension String {
         }
 
         func readUnicodeScalar() throws -> Unicode.Scalar {
-            json.formIndex(after: &index)
-            guard index < json.endIndex else {
+            let codeString = try stream.read(count: 4) { buffer in
+                return String(decoding: buffer, as: UTF8.self)
+            }
+            guard let code = Int(codeString, radix: 16),
+                let scalar = Unicode.Scalar(code) else
+            {
                 throw JSONError.invalidJSON
-            }
-            let start = index
-            guard json.formIndex(
-                &index, offsetBy: 3, limitedBy: json.endIndex) else {
-                    throw JSONError.invalidJSON
-            }
-            guard let code = Int(String(decoding: json[start...index], as: UTF8.self), radix: 16),
-                let scalar = Unicode.Scalar(code) else {
-                    throw JSONError.invalidJSON
             }
             return scalar
         }
 
         var done = false
-        while !done, index < json.endIndex {
-            let character =  json[index]
+        while !done {
+            let character = try stream.read(UInt8.self)
             switch character {
             case .quote:
                 done = true
@@ -56,7 +45,6 @@ extension String {
             default:
                 result.unicodeScalars.append(Unicode.Scalar(character))
             }
-            json.formIndex(after: &index)
         }
 
         guard done else {

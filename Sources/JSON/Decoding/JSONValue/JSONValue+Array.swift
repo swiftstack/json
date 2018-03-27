@@ -1,28 +1,24 @@
+import Stream
+
 extension Array where Element == JSONValue {
-    init(
-        from json: [UInt8],
-        at index: inout Int
-    ) throws {
-        guard json[index] == .bracketOpen else {
+    init<T: StreamReader>(from stream: T) throws {
+        guard try stream.consume(.bracketOpen) else {
             throw JSONError.invalidJSON
         }
-        json.formIndex(after: &index)
-
-        var done = false
         var result = [JSONValue]()
-        while !done, index < json.endIndex {
-            json.formIndex(from: &index, consuming: .whitespace)
-            switch json[index] {
+        loop: while true {
+            try stream.consume(set: .whitespace)
+
+            switch try stream.peek() {
             case .bracketClose:
-                json.formIndex(after: &index)
-                done = true
+                try stream.consume(count: 1)
+                break loop
             case .comma:
-                json.formIndex(after: &index)
+                try stream.consume(count: 1)
             default:
-                result.append(try JSONValue(from: json, at: &index))
+                result.append(try JSONValue(from: stream))
             }
         }
-
         self = result
     }
 }

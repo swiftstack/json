@@ -1,37 +1,33 @@
+import Stream
+
 extension Dictionary where Key == String, Value == JSONValue {
-    init(
-        from json: [UInt8],
-        at index: inout Int
-    ) throws {
-        guard json[index] == .curlyBracketOpen else {
+    init<T: StreamReader>(from stream: T) throws {
+        guard try stream.consume(.curlyBracketOpen) else {
             throw JSONError.invalidJSON
         }
-        json.formIndex(after: &index)
 
-        var done = false
         var result = [String : JSONValue]()
-        while !done, index < json.endIndex {
-            json.formIndex(from: &index, consuming: .whitespace)
-            switch json[index] {
+        loop: while true {
+            try stream.consume(set: .whitespace)
+
+            switch try stream.peek() {
             case .curlyBracketClose:
-                json.formIndex(after: &index)
-                done = true
+                try stream.consume(count: 1)
+                break loop
             case .quote:
-                let key = try String(from: json, at: &index)
-                json.formIndex(from: &index, consuming: .whitespace)
-                guard json[index] == .colon else {
+                let key = try String(from: stream)
+                try stream.consume(set: .whitespace)
+                guard try stream.consume(.colon) else {
                     throw JSONError.invalidJSON
                 }
-                json.formIndex(after: &index)
-                json.formIndex(from: &index, consuming: .whitespace)
-                result[key] = try JSONValue(from: json, at: &index)
+                try stream.consume(set: .whitespace)
+                result[key] = try JSONValue(from: stream)
             case .comma:
-                json.formIndex(after: &index)
+                try stream.consume(count: 1)
             default:
                 throw JSONError.invalidJSON
             }
         }
-
         self = result
     }
 }

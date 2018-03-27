@@ -1,18 +1,19 @@
 import Test
+import Stream
 @testable import JSON
 
 class _JSONDecoderTests: TestCase {
     func testKeyedContainer() {
         do {
-            let json = [UInt8]("""
+            let json = InputByteStream("""
                 {"answer":42}
-                """.utf8)
+                """)
             let decoder = try _JSONDecoder(json)
             enum Keys: CodingKey {
                 case answer
             }
             let container = try decoder.container(keyedBy: Keys.self)
-            let answer = try? container.decode(Int.self, forKey: .answer)
+            let answer = try container.decode(Int.self, forKey: .answer)
             assertEqual(answer, 42)
         } catch {
             fail(String(describing: error))
@@ -21,7 +22,7 @@ class _JSONDecoderTests: TestCase {
 
     func testUnkeyedContainer() {
         do {
-            let json = [UInt8]("[1,[2],[3],4]".utf8)
+            let json = InputByteStream("[1,[2],[3],4]")
             let decoder = try _JSONDecoder(json)
             var container = try decoder.unkeyedContainer()
             let int1 = try container.decode(Int.self)
@@ -41,7 +42,7 @@ class _JSONDecoderTests: TestCase {
 
     func testSingleValueContainer() {
         do {
-            let json = [UInt8]("true".utf8)
+            let json = InputByteStream("true")
             let decoder = try _JSONDecoder(json)
             let container = try decoder.singleValueContainer()
             let bool = try container.decode(Bool.self)

@@ -1,11 +1,12 @@
 import Test
+import Stream
 @testable import JSON
 
 class JSONDecoderTests: TestCase {
     func testKeyed() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"answer":42,"hello":"Hello, World!"}
-            """.utf8)
+            """)
         struct Model: Decodable {
             let answer: Int
             let hello: String
@@ -20,9 +21,9 @@ class JSONDecoderTests: TestCase {
     }
 
     func testKeyedNested() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"answer":42,"nested":{"hello":"Hello, World!"}}
-            """.utf8)
+            """)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let hello: String
@@ -40,9 +41,9 @@ class JSONDecoderTests: TestCase {
     }
 
     func testKeyedNestedInTheMiddle() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"nested":{"hello":"Hello, World!"},"answer":42}
-            """.utf8)
+            """)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let hello: String
@@ -60,9 +61,9 @@ class JSONDecoderTests: TestCase {
     }
 
     func testNestedArrayInTheMiddle() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"nested":{"array":[1,2]},"answer":42}
-            """.utf8)
+            """)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let array: [Int]
@@ -80,9 +81,9 @@ class JSONDecoderTests: TestCase {
     }
 
     func testNestedArraysInTheMiddle() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"nested":{"array":[[1,2],[3,4]]},"answer":42}
-            """.utf8)
+            """)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let array: [[Int]]
@@ -102,7 +103,7 @@ class JSONDecoderTests: TestCase {
 
     func testEncodeUnkeyed() {
         do {
-            let json = [UInt8]("[1,2,3]".utf8)
+            let json = InputByteStream("[1,2,3]")
             let object = try JSONDecoder().decode([Int].self, from: json)
             assertEqual(object, [1,2,3])
         } catch {
@@ -112,7 +113,7 @@ class JSONDecoderTests: TestCase {
 
     func testEncodeUnkeyedOfUnkeyed() {
         do {
-            let json = [UInt8]("[[1,2],[3,4]]".utf8)
+            let json = InputByteStream("[[1,2],[3,4]]")
             let object = try JSONDecoder().decode([[Int]].self, from: json)
             assertEqual(object.first ?? [], [1,2])
             assertEqual(object.last ?? [], [3,4])
@@ -122,9 +123,9 @@ class JSONDecoderTests: TestCase {
     }
 
     func testEnum() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"single":1,"array":[1,2,3]}
-            """.utf8)
+            """)
         enum Number: Int, Decodable {
             case one = 1
             case two
@@ -144,9 +145,9 @@ class JSONDecoderTests: TestCase {
     }
 
     func testDecodable() {
-        let json = [UInt8]("""
+        let json = InputByteStream("""
             {"answer":42,"hello":"Hello, World!"}
-            """.utf8)
+            """)
         struct Model: Decodable {
             let answer: Int
             let hello: String

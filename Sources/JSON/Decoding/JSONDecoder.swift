@@ -1,18 +1,24 @@
+import Stream
+
 public class JSONDecoder {
     public init() { }
+}
 
-    public func decode<T: Decodable>(
-        _ type: T.Type, from json: [UInt8]
-    ) throws -> T {
-        let decoder = try _JSONDecoder(json)
-        return try T(from: decoder)
+extension JSONDecoder {
+    public func decode<Model: Decodable, Reader: StreamReader>(
+        _ type: Model.Type,
+        from reader: Reader) throws -> Model
+    {
+        let decoder = try _JSONDecoder(reader)
+        return try Model(from: decoder)
     }
-    
+
     // FIXME: (_ type: Decodable.Type, ...) shadows the generic one
-    public func decode(
-        decodable type: Decodable.Type, from json: [UInt8]
-    ) throws -> Decodable {
-        let decoder = try _JSONDecoder(json)
+    public func decode<Reader: StreamReader>(
+        decodable type: Decodable.Type,
+        from reader: Reader) throws -> Decodable
+    {
+        let decoder = try _JSONDecoder(reader)
         return try type.init(from: decoder)
     }
 }
@@ -31,13 +37,13 @@ class _JSONDecoder: Decoder {
         self.json = json
     }
 
-    init(_ json: [UInt8]) throws {
-        self.json = try JSONValue(from: json)
+    init<T: StreamReader>(_ stream: T) throws {
+        self.json = try JSONValue(from: stream)
     }
 
     func container<Key>(
-        keyedBy type: Key.Type
-    ) throws -> KeyedDecodingContainer<Key> {
+        keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key>
+    {
         guard case .object(let dictionary) = json else {
             throw DecodingError.typeMismatch([String : JSONValue].self, nil)
         }

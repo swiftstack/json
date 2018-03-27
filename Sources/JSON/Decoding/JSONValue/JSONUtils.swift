@@ -1,13 +1,4 @@
-extension Array where Element == UInt8 {
-    func formIndex(
-        from index: inout Int,
-        consuming characters: Set<UInt8>
-    ) {
-        while index < endIndex, characters.contains(self[index]) {
-            formIndex(after: &index)
-        }
-    }
-}
+import Stream
 
 extension Set where Element == UInt8 {
     static let control: Set<UInt8> = [.cr, .lf, .tab]
@@ -19,7 +10,15 @@ extension Set where Element == UInt8 {
     ]
 }
 
+extension StreamReader {
+    @inline(__always)
+    func consume(set: Set<UInt8>) throws {
+        try consume { set.contains($0) }
+    }
+}
+
 extension UInt8 {
+    @inline(__always)
     func contained(in set: Set<UInt8>) -> Bool {
         return set.contains(self)
     }

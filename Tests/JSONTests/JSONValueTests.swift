@@ -1,10 +1,11 @@
 import Test
+import Stream
 @testable import JSON
 
 class JSONValueTests: TestCase {
     func testNull() {
         do {
-            let null = try JSONValue(from: [UInt8]("null".utf8))
+            let null = try JSONValue(from: InputByteStream("null"))
             assertEqual(null, .null)
         } catch {
             fail(String(describing: error))
@@ -13,10 +14,10 @@ class JSONValueTests: TestCase {
 
     func testBool() {
         do {
-            let jsonTrue = try JSONValue(from: [UInt8]("true".utf8))
+            let jsonTrue = try JSONValue(from: InputByteStream("true"))
             assertEqual(jsonTrue, .bool(true))
 
-            let jsonFalse = try JSONValue(from: [UInt8]("false".utf8))
+            let jsonFalse = try JSONValue(from: InputByteStream("false"))
             assertEqual(jsonFalse, .bool(false))
         } catch {
             fail(String(describing: error))
@@ -25,13 +26,13 @@ class JSONValueTests: TestCase {
 
     func testNumber() {
         do {
-            let uint = try JSONValue(from: [UInt8]("42".utf8))
+            let uint = try JSONValue(from: InputByteStream("42"))
             assertEqual(uint, .number(.uint(42)))
 
-            let int = try JSONValue(from: [UInt8]("-42".utf8))
+            let int = try JSONValue(from: InputByteStream("-42"))
             assertEqual(int, .number(.int(-42)))
 
-            let double = try JSONValue(from: [UInt8]("-42.42".utf8))
+            let double = try JSONValue(from: InputByteStream("-42.42"))
             assertEqual(double, .number(.double(-42.42)))
         } catch {
             fail(String(describing: error))
@@ -40,15 +41,15 @@ class JSONValueTests: TestCase {
 
     func testString() {
         do {
-            let string = try JSONValue(from: [UInt8]("\"string\"".utf8))
+            let string = try JSONValue(from: InputByteStream("\"string\""))
             assertEqual(string, .string("string"))
 
-            let escapedString = try JSONValue(from: [UInt8]("\"string\\r\\n\"".utf8))
+            let escapedString = try JSONValue(from: InputByteStream("\"string\\r\\n\""))
             assertEqual(escapedString, .string("string\r\n"))
 
-            assertThrowsError(try JSONValue(from: [UInt8]("\"string\r\n\"".utf8)))
+            assertThrowsError(try JSONValue(from: InputByteStream("\"string\r\n\"")))
 
-            let json = [UInt8]("\"\\u3053\\u3093\\u306b\\u3061\\u306f\"".utf8)
+            let json = InputByteStream("\"\\u3053\\u3093\\u306b\\u3061\\u306f\"")
             let escapedUnicode = try JSONValue(from: json)
             assertEqual(escapedUnicode, .string("こんにちは"))
         } catch {
@@ -58,27 +59,27 @@ class JSONValueTests: TestCase {
 
     func testObject() {
         do {
-            let empty = try JSONValue(from: [UInt8]("{}".utf8))
+            let empty = try JSONValue(from: InputByteStream("{}"))
             assertEqual(empty, .object([:]))
 
-            let simple = try JSONValue(from: [UInt8]("""
+            let simple = try JSONValue(from: InputByteStream("""
                 {"key":"value"}
-                """.utf8))
+                """))
             assertEqual(simple, .object(["key" : .string("value")]))
 
-            let nested = try JSONValue(from: [UInt8]("""
+            let nested = try JSONValue(from: InputByteStream("""
                 {"o":{"k":"v"}}
-                """.utf8))
+                """))
             assertEqual(nested, .object(["o":.object(["k" : .string("v")])]))
 
-            let whitespace = try JSONValue(from: [UInt8]("""
+            let whitespace = try JSONValue(from: InputByteStream("""
                 {"key" : "value"}
-                """.utf8))
+                """))
             assertEqual(whitespace, .object(["key" : .string("value")]))
 
-            let separator = try JSONValue(from: [UInt8]("""
+            let separator = try JSONValue(from: InputByteStream("""
                 {"k1":"v1", "k2":"v2"}
-                """.utf8))
+                """))
             let expected: JSONValue = .object(
                 ["k1" : .string("v1"), "k2" : .string("v2")])
             assertEqual(separator, expected)
@@ -89,15 +90,15 @@ class JSONValueTests: TestCase {
 
     func testArray() {
         do {
-            let empty = try JSONValue(from: [UInt8]("[]".utf8))
+            let empty = try JSONValue(from: InputByteStream("[]"))
             assertEqual(empty, .array([]))
 
-            let simple = try JSONValue(from: [UInt8]("[1,2]".utf8))
+            let simple = try JSONValue(from: InputByteStream("[1,2]"))
             assertEqual(simple, .array([.number(.uint(1)), .number(.uint(2))]))
 
-            let strings = try JSONValue(from: [UInt8]("""
+            let strings = try JSONValue(from: InputByteStream("""
                 ["one", "two"]
-                """.utf8))
+                """))
             assertEqual(strings, .array([.string("one"), .string("two")]))
 
         } catch {
@@ -107,18 +108,18 @@ class JSONValueTests: TestCase {
 
     func testNested() {
         do {
-            let objectInArray = try JSONValue(from: [UInt8]("""
+            let objectInArray = try JSONValue(from: InputByteStream("""
                 ["one", 2, {"key": false}]
-                """.utf8))
+                """))
             assertEqual(objectInArray, .array([
                 .string("one"),
                 .number(.uint(2)),
                 .object(["key": .bool(false)])
                 ]))
 
-            let arrayInObject = try JSONValue(from: [UInt8]("""
+            let arrayInObject = try JSONValue(from: InputByteStream("""
                 {"values" : [1,true]}
-                """.utf8))
+                """))
             assertEqual(arrayInObject, .object(
                 ["values": .array([.number(.uint(1)), .bool(true)])]
                 ))
