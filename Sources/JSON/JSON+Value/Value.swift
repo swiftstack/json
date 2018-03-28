@@ -1,30 +1,21 @@
 import Stream
 
-public enum JSONValue {
-    case null
-    case bool(Bool)
-    case number(Number)
-    case string(String)
-    case array([JSONValue])
-    case object([String : JSONValue])
-}
-
-extension JSONValue {
+extension JSON.Value {
     public init<T: StreamReader>(from stream: T) throws {
         try stream.consume(set: .whitespaces)
 
         func ensureValue(_ value: [UInt8]) throws {
             guard try stream.consume(sequence: value) else {
-                throw JSONError.invalidJSON
+                throw JSON.Error.invalidJSON
             }
         }
 
         switch try stream.peek() {
         case .curlyBracketOpen:
-            self = .object(try [String : JSONValue](from: stream))
+            self = .object(try [String : JSON.Value](from: stream))
 
         case .bracketOpen:
-            self = .array(try [JSONValue](from: stream))
+            self = .array(try [JSON.Value](from: stream))
 
         case .n:
             try ensureValue(.null)
@@ -45,13 +36,13 @@ extension JSONValue {
             self = .string(try String(from: stream))
 
         default:
-            throw JSONError.invalidJSON
+            throw JSON.Error.invalidJSON
         }
     }
 }
 
-extension JSONValue: Equatable {
-    public static func ==(lhs: JSONValue, rhs: JSONValue) -> Bool {
+extension JSON.Value: Equatable {
+    public static func ==(lhs: JSON.Value, rhs: JSON.Value) -> Bool {
         switch (lhs, rhs) {
         case (.null, .null): return true
         case let (.bool(lhs), .bool(rhs)): return lhs == rhs
@@ -64,7 +55,7 @@ extension JSONValue: Equatable {
     }
 }
 
-extension JSONValue: CustomStringConvertible {
+extension JSON.Value: CustomStringConvertible {
     public var description: String {
         switch self {
         case .null: return "null"

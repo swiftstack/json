@@ -3,12 +3,12 @@ extension DecodingError.Context {
         return DecodingError.Context(codingPath: [], debugDescription: string)
     }
 
-    static func incompatible(with value: JSONValue) -> DecodingError.Context {
+    static func incompatible(with value: JSON.Value) -> DecodingError.Context {
         return .description("incompatible with \(value)")
     }
 
     static func incompatible<T: CodingKey>(
-        with value: JSONValue, for key: T
+        with value: JSON.Value, for key: T
     ) -> DecodingError.Context {
         return .description("incompatible with \(value) for \(key)")
     }

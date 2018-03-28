@@ -31,21 +31,21 @@ class _JSONDecoder: Decoder {
         return [:]
     }
 
-    let json: JSONValue
+    let json: JSON.Value
 
-    init(_ json: JSONValue) throws {
+    init(_ json: JSON.Value) throws {
         self.json = json
     }
 
     init<T: StreamReader>(_ stream: T) throws {
-        self.json = try JSONValue(from: stream)
+        self.json = try JSON.Value(from: stream)
     }
 
     func container<Key>(
         keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key>
     {
         guard case .object(let dictionary) = json else {
-            throw DecodingError.typeMismatch([String : JSONValue].self, nil)
+            throw DecodingError.typeMismatch([String : JSON.Value].self, nil)
         }
         let container = JSONKeyedDecodingContainer<Key>(dictionary)
         return KeyedDecodingContainer(container)
@@ -53,7 +53,7 @@ class _JSONDecoder: Decoder {
 
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
         guard case .array(let array) = json else {
-            throw DecodingError.typeMismatch([JSONValue].self, nil)
+            throw DecodingError.typeMismatch([JSON.Value].self, nil)
         }
         return JSONUnkeyedDecodingContainer(array)
     }

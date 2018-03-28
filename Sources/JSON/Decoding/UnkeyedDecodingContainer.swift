@@ -4,8 +4,8 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     }
 
     var currentIndex: Int
-    let array: [JSONValue]
-    init(_ array: [JSONValue]) {
+    let array: [JSON.Value]
+    init(_ array: [JSON.Value]) {
         self.array = array
         self.currentIndex = 0
     }
@@ -103,7 +103,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
         keyedBy type: NestedKey.Type
     ) throws -> KeyedDecodingContainer<NestedKey> {
         guard case .object(let object) = array[currentIndex] else {
-            throw DecodingError.typeMismatch([String : JSONValue].self, nil)
+            throw DecodingError.typeMismatch([String : JSON.Value].self, nil)
         }
         currentIndex += 1
         let container = JSONKeyedDecodingContainer<NestedKey>(object)
@@ -112,7 +112,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
 
     func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
         guard case .array(let array) = array[currentIndex] else {
-            throw DecodingError.typeMismatch([JSONValue].self, nil)
+            throw DecodingError.typeMismatch([JSON.Value].self, nil)
         }
         currentIndex += 1
         return JSONUnkeyedDecodingContainer(array)

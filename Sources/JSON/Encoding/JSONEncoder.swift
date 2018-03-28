@@ -215,7 +215,7 @@ extension _JSONEncoder {
                 try storage.write(String(scalar.value, radix: 16))
             default:
                 guard let utf8 = UTF8.encode(scalar) else {
-                    throw JSONError.invalidJSON
+                    throw JSON.Error.invalidJSON
                 }
                 try utf8.forEach(storage.write)
             }

@@ -1,11 +1,11 @@
 import Stream
 
-extension Array where Element == JSONValue {
+extension Array where Element == JSON.Value {
     public init<T: StreamReader>(from stream: T) throws {
         guard try stream.consume(.bracketOpen) else {
-            throw JSONError.invalidJSON
+            throw JSON.Error.invalidJSON
         }
-        var result = [JSONValue]()
+        var result = [JSON.Value]()
         loop: while true {
             try stream.consume(set: .whitespaces)
 
@@ -16,7 +16,7 @@ extension Array where Element == JSONValue {
             case .comma:
                 try stream.consume(count: 1)
             default:
-                result.append(try JSONValue(from: stream))
+                result.append(try JSON.Value(from: stream))
             }
         }
         self = result

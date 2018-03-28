@@ -1,6 +1,23 @@
 import Stream
 
 public struct JSON {
+    public enum Value {
+        case null
+        case bool(Bool)
+        case number(Number)
+        case string(String)
+        case array([JSON.Value])
+        case object([String : JSON.Value])
+
+        public enum Number {
+            case int(Int)
+            case uint(UInt)
+            case double(Double)
+        }
+    }
+}
+
+extension JSON {
     public static func encode<Model: Encodable, Writer: StreamWriter>(
         _ value: Model,
         to stream: Writer) throws

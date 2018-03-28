@@ -3,7 +3,7 @@ import Stream
 extension String {
     init<T: StreamReader>(from stream: T) throws {
         guard try stream.consume(.quote) else {
-            throw JSONError.invalidJSON
+            throw JSON.Error.invalidJSON
         }
 
         var result: [UInt8] = []
@@ -16,7 +16,7 @@ extension String {
             case .t: result.append(.tab)
             case .backslash: result.append(.backslash)
             case .u: try readUnicodeScalar()
-            default: throw JSONError.invalidJSON
+            default: throw JSON.Error.invalidJSON
             }
         }
 
@@ -27,7 +27,7 @@ extension String {
             guard let scalar = Unicode.Scalar(code),
                 let encoded = UTF8.encode(scalar) else
             {
-                throw JSONError.invalidJSON
+                throw JSON.Error.invalidJSON
             }
 
             result.append(contentsOf: encoded)
@@ -41,7 +41,7 @@ extension String {
             case .backslash:
                 try readEscaped()
             case _ where character.contained(in: .controls):
-                throw JSONError.invalidJSON
+                throw JSON.Error.invalidJSON
             default:
                 result.append(character)
             }
