@@ -1,7 +1,7 @@
 import Stream
 
 extension JSON.Value {
-    public init<T: StreamReader>(from stream: T) throws {
+    public init(from stream: StreamReader) throws {
         try stream.consume(set: .whitespaces)
 
         func ensureValue(_ value: [UInt8]) throws {

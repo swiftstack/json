@@ -135,7 +135,7 @@ class JSONEncoderTests: TestCase {
                 let hello: String = "Hello, World"
             }
             let encodable = Model() as Encodable
-            let bytes = try JSONEncoder().encode(encodable)
+            let bytes = try JSONEncoder().encode(encodable: encodable)
             let json = String(decoding: bytes, as: UTF8.self)
             assertEqual(json, expected)
         }

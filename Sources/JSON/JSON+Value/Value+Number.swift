@@ -2,7 +2,7 @@ import Stream
 import Platform
 
 extension JSON.Value.Number {
-    public init<T: StreamReader>(from stream: T) throws {
+    public init(from stream: StreamReader) throws {
         let isNegative = try stream.consume(.hyphen) ? true : false
         var isInteger = true
 

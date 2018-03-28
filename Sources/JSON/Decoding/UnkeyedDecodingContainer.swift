@@ -93,7 +93,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     func decodeIfPresent<T>(
         _ type: T.Type
     ) throws -> T? where T : Decodable {
-        let decoder = try _JSONDecoder(array[currentIndex])
+        let decoder = try Decoder(array[currentIndex])
         let value = try T(from: decoder)
         currentIndex += 1
         return value
@@ -118,13 +118,13 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
         return JSONUnkeyedDecodingContainer(array)
     }
 
-    func superDecoder() throws -> Decoder {
+    func superDecoder() throws -> Swift.Decoder {
         return self
     }
 }
 
 // FIXME: 😞
-extension JSONUnkeyedDecodingContainer: Decoder {
+extension JSONUnkeyedDecodingContainer: Swift.Decoder {
     var userInfo: [CodingUserInfoKey : Any] {
         return [:]
     }

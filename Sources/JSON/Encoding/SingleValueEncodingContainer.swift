@@ -1,14 +1,13 @@
 import Stream
 
-struct JSONSingleValueEncodingContainer<Writer: StreamWriter>
-: SingleValueEncodingContainer {
+struct JSONSingleValueEncodingContainer: SingleValueEncodingContainer {
     var codingPath: [CodingKey] {
         return []
     }
 
-    let encoder: _JSONEncoder<Writer>
+    let encoder: Encoder
 
-    init(_ encoder: _JSONEncoder<Writer>) {
+    init(_ encoder: Encoder) {
         self.encoder = encoder
     }
 

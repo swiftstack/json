@@ -1,16 +1,15 @@
 import Stream
 
-struct JSONUnkeyedEncodingContainer<Writer: StreamWriter>
-: UnkeyedEncodingContainer {
+struct JSONUnkeyedEncodingContainer: UnkeyedEncodingContainer {
     var codingPath: [CodingKey] {
         return []
     }
 
-    let encoder: _JSONEncoder<Writer>
+    let encoder: Encoder
     let nestingLevel: Int
     var count: Int
 
-    init(_ encoder: _JSONEncoder<Writer>) {
+    init(_ encoder: Encoder) {
         self.encoder = encoder
         self.nestingLevel = encoder.openedContainers.count
         self.count = 0
@@ -173,7 +172,7 @@ struct JSONUnkeyedEncodingContainer<Writer: StreamWriter>
         }
     }
 
-    mutating func superEncoder() -> Encoder {
+    mutating func superEncoder() -> Swift.Encoder {
         do {
             try closeNestedIfNeeded()
             try writeCommaIfNeeded()

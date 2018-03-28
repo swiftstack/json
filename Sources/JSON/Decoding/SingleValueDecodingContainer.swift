@@ -83,7 +83,7 @@ struct JSONSingleValueDecodingContainer: SingleValueDecodingContainer {
     }
 
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        let decoder = try _JSONDecoder(value)
+        let decoder = try Decoder(value)
         return try T(from: decoder)
     }
 }

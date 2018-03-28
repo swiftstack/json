@@ -1,7 +1,7 @@
 import Stream
 
 extension String {
-    init<T: StreamReader>(from stream: T) throws {
+    init(from stream: StreamReader) throws {
         guard try stream.consume(.quote) else {
             throw JSON.Error.invalidJSON
         }

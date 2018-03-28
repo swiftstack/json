@@ -5,25 +5,24 @@ public class JSONDecoder {
 }
 
 extension JSONDecoder {
-    public func decode<Model: Decodable, Reader: StreamReader>(
+    public func decode<Model: Decodable>(
         _ type: Model.Type,
-        from reader: Reader) throws -> Model
+        from reader: StreamReader) throws -> Model
     {
-        let decoder = try _JSONDecoder(reader)
+        let decoder = try Decoder(reader)
         return try Model(from: decoder)
     }
 
-    // FIXME: (_ type: Decodable.Type, ...) shadows the generic one
-    public func decode<Reader: StreamReader>(
+    public func decode(
         decodable type: Decodable.Type,
-        from reader: Reader) throws -> Decodable
+        from reader: StreamReader) throws -> Decodable
     {
-        let decoder = try _JSONDecoder(reader)
+        let decoder = try Decoder(reader)
         return try type.init(from: decoder)
     }
 }
 
-class _JSONDecoder: Decoder {
+class Decoder: Swift.Decoder {
     var codingPath: [CodingKey] {
         return []
     }
@@ -37,7 +36,7 @@ class _JSONDecoder: Decoder {
         self.json = json
     }
 
-    init<T: StreamReader>(_ stream: T) throws {
+    init(_ stream: StreamReader) throws {
         self.json = try JSON.Value(from: stream)
     }
 

@@ -3,42 +3,45 @@ import Stream
 public struct JSONEncoder {
     public init() {}
 
-    public func encode<Model, Writer>(_ value: Model, to writer: Writer) throws
-        where Model: Encodable, Writer: StreamWriter
+    public func encode<Model>(_ value: Model, to writer: StreamWriter) throws
+        where Model: Encodable
     {
-        let encoder = _JSONEncoder(writer)
+        let encoder = Encoder(writer)
         try value.encode(to: encoder)
         try encoder.close()
     }
 
-    public func encode<Writer>(_ value: Encodable, to writer: Writer) throws
-        where Writer: StreamWriter
+    public func encode(
+        encodable value: Encodable,
+        to writer: StreamWriter) throws
     {
-        let encoder = _JSONEncoder(writer)
+        let encoder = Encoder(writer)
         try value.encode(to: encoder)
         try encoder.close()
     }
 }
 
 extension JSONEncoder {
-    public func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
+    public func encode<Model>(_ value: Model) throws -> [UInt8]
+        where Model: Encodable
+    {
         let stream = OutputByteStream()
-        let encoder = _JSONEncoder(stream)
+        let encoder = Encoder(stream)
         try value.encode(to: encoder)
         try encoder.close()
         return stream.bytes
     }
 
-    public func encode(_ value: Encodable) throws -> [UInt8] {
+    public func encode(encodable value: Encodable) throws -> [UInt8] {
         let stream = OutputByteStream()
-        let encoder = _JSONEncoder(stream)
+        let encoder = Encoder(stream)
         try value.encode(to: encoder)
         try encoder.close()
         return stream.bytes
     }
 }
 
-class _JSONEncoder<Writer: StreamWriter>: Encoder {
+class Encoder: Swift.Encoder {
     public var codingPath: [CodingKey] {
         return []
     }
@@ -46,9 +49,9 @@ class _JSONEncoder<Writer: StreamWriter>: Encoder {
         return [:]
     }
 
-    let storage: Writer
+    let storage: StreamWriter
 
-    init(_ writer: Writer) {
+    init(_ writer: StreamWriter) {
         self.storage = writer
     }
 
@@ -98,7 +101,7 @@ class _JSONEncoder<Writer: StreamWriter>: Encoder {
     {
         do {
             try openContainer(.keyed)
-            let container = JSONKeyedEncodingContainer<Key, Writer>(self)
+            let container = JSONKeyedEncodingContainer<Key>(self)
             return KeyedEncodingContainer(container)
         } catch {
             return KeyedEncodingContainer(KeyedEncodingContainerError())
@@ -124,7 +127,7 @@ class _JSONEncoder<Writer: StreamWriter>: Encoder {
     }
 }
 
-extension _JSONEncoder {
+extension Encoder {
     func encodeNil() throws {
         try storage.write(.null)
     }
