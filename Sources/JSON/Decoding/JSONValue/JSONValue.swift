@@ -10,7 +10,7 @@ public enum JSONValue {
 }
 
 extension JSONValue {
-    init<T: StreamReader>(from stream: T) throws {
+    public init<T: StreamReader>(from stream: T) throws {
         try stream.consume(set: .whitespace)
 
         func ensureValue(_ value: [UInt8]) throws {

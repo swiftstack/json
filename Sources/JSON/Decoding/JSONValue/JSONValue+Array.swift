@@ -1,7 +1,7 @@
 import Stream
 
 extension Array where Element == JSONValue {
-    init<T: StreamReader>(from stream: T) throws {
+    public init<T: StreamReader>(from stream: T) throws {
         guard try stream.consume(.bracketOpen) else {
             throw JSONError.invalidJSON
         }

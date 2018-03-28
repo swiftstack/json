@@ -1,7 +1,7 @@
 import Stream
 
 extension Dictionary where Key == String, Value == JSONValue {
-    init<T: StreamReader>(from stream: T) throws {
+    public init<T: StreamReader>(from stream: T) throws {
         guard try stream.consume(.curlyBracketOpen) else {
             throw JSONError.invalidJSON
         }
