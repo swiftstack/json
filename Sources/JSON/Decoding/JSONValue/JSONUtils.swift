@@ -1,11 +1,11 @@
 import Stream
 
 extension Set where Element == UInt8 {
-    static let control: Set<UInt8> = [.cr, .lf, .tab]
+    static let controls: Set<UInt8> = [.cr, .lf, .tab]
 
-    static var whitespace: Set<UInt8> = [.whitespace, .cr, .lf, .tab]
+    static var whitespaces: Set<UInt8> = [.whitespace, .cr, .lf, .tab]
 
-    static let terminator: Set<UInt8> = [
+    static let terminators: Set<UInt8> = [
         .whitespace, .cr, .lf, .tab, .comma, .curlyBracketClose, .bracketClose
     ]
 }

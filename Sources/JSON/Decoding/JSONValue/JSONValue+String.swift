@@ -42,7 +42,7 @@ extension String {
                 done = true
             case .backslash:
                 try readEscaped()
-            case _ where character.contained(in: .control):
+            case _ where character.contained(in: .controls):
                 throw JSONError.invalidJSON
             default:
                 result.append(character)
