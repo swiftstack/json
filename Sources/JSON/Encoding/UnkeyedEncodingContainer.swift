@@ -40,6 +40,13 @@ struct JSONUnkeyedEncodingContainer<Writer: StreamWriter>
         count += 1
     }
 
+    mutating func encode(_ value: Bool) throws {
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try encoder.encode(value)
+        count += 1
+    }
+
     mutating func encode(_ value: Int) throws {
         try closeNestedIfNeeded()
         try writeCommaIfNeeded()
