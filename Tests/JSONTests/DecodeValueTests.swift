@@ -2,7 +2,7 @@ import Test
 import Stream
 @testable import JSON
 
-class JSONValueTests: TestCase {
+class DecodeValueTests: TestCase {
     func testNull() {
         scope {
             let null = try JSON.Value(from: InputByteStream("null"))
