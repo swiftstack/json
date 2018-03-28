@@ -6,30 +6,32 @@ extension String {
             throw JSONError.invalidJSON
         }
 
-        var result = ""
+        var result: [UInt8] = []
 
         func readEscaped() throws {
             switch try stream.read(UInt8.self) {
-            case .quote: result.append("\"")
-            case .n: result.append("\n")
-            case .r: result.append("\r")
-            case .t: result.append("\t")
-            case .backslash: result.append("\\")
-            case .u: result.unicodeScalars.append(try readUnicodeScalar())
+            case .quote: result.append(.quote)
+            case .n: result.append(.lf)
+            case .r: result.append(.cr)
+            case .t: result.append(.tab)
+            case .backslash: result.append(.backslash)
+            case .u: try readUnicodeScalar()
             default: throw JSONError.invalidJSON
             }
         }
 
-        func readUnicodeScalar() throws -> Unicode.Scalar {
+        func readUnicodeScalar() throws {
             let codeString = try stream.read(count: 4) { buffer in
                 return String(decoding: buffer, as: UTF8.self)
             }
             guard let code = Int(codeString, radix: 16),
-                let scalar = Unicode.Scalar(code) else
+                let scalar = Unicode.Scalar(code),
+                let encoded = UTF8.encode(scalar) else
             {
                 throw JSONError.invalidJSON
             }
-            return scalar
+
+            result.append(contentsOf: encoded)
         }
 
         var done = false
@@ -43,7 +45,7 @@ extension String {
             case _ where character.contained(in: .control):
                 throw JSONError.invalidJSON
             default:
-                result.unicodeScalars.append(Unicode.Scalar(character))
+                result.append(character)
             }
         }
 
@@ -51,6 +53,6 @@ extension String {
             throw JSONError.invalidJSON
         }
 
-        self = result
+        self = String(decoding: result, as: UTF8.self)
     }
 }
