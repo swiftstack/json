@@ -21,11 +21,10 @@ extension String {
         }
 
         func readUnicodeScalar() throws {
-            let codeString = try stream.read(count: 4) { buffer in
-                return String(decoding: buffer, as: UTF8.self)
+            let code = try stream.read(count: 4) { buffer in
+                return Int(hex: buffer)
             }
-            guard let code = Int(codeString, radix: 16),
-                let scalar = Unicode.Scalar(code),
+            guard let scalar = Unicode.Scalar(code),
                 let encoded = UTF8.encode(scalar) else
             {
                 throw JSONError.invalidJSON
@@ -34,12 +33,11 @@ extension String {
             result.append(contentsOf: encoded)
         }
 
-        var done = false
-        while !done {
+        loop: while true {
             let character = try stream.read(UInt8.self)
             switch character {
             case .quote:
-                done = true
+                break loop
             case .backslash:
                 try readEscaped()
             case _ where character.contained(in: .controls):
@@ -47,10 +45,6 @@ extension String {
             default:
                 result.append(character)
             }
-        }
-
-        guard done else {
-            throw JSONError.invalidJSON
         }
 
         self = String(decoding: result, as: UTF8.self)
