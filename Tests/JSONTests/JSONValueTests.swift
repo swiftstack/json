@@ -4,28 +4,24 @@ import Stream
 
 class JSONValueTests: TestCase {
     func testNull() {
-        do {
+        scope {
             let null = try JSONValue(from: InputByteStream("null"))
             assertEqual(null, .null)
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testBool() {
-        do {
+        scope {
             let jsonTrue = try JSONValue(from: InputByteStream("true"))
             assertEqual(jsonTrue, .bool(true))
 
             let jsonFalse = try JSONValue(from: InputByteStream("false"))
             assertEqual(jsonFalse, .bool(false))
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testNumber() {
-        do {
+        scope {
             let uint = try JSONValue(from: InputByteStream("42"))
             assertEqual(uint, .number(.uint(42)))
 
@@ -34,31 +30,31 @@ class JSONValueTests: TestCase {
 
             let double = try JSONValue(from: InputByteStream("-42.42"))
             assertEqual(double, .number(.double(-42.42)))
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testString() {
-        do {
+        scope {
             let string = try JSONValue(from: InputByteStream("\"string\""))
             assertEqual(string, .string("string"))
 
-            let escapedString = try JSONValue(from: InputByteStream("\"string\\r\\n\""))
+            let escapedJson = InputByteStream("\"string\\r\\n\"")
+            let escapedString = try JSONValue(from: escapedJson)
             assertEqual(escapedString, .string("string\r\n"))
 
-            assertThrowsError(try JSONValue(from: InputByteStream("\"string\r\n\"")))
+            let invalidJson = InputByteStream("\"string\r\n\"")
+            assertThrowsError(try JSONValue(from: invalidJson))
 
-            let json = InputByteStream("\"\\u3053\\u3093\\u306b\\u3061\\u306f\"")
-            let escapedUnicode = try JSONValue(from: json)
+            let escapedUnicodeJson = InputByteStream("""
+                "\\u3053\\u3093\\u306b\\u3061\\u306f"
+            """)
+            let escapedUnicode = try JSONValue(from: escapedUnicodeJson)
             assertEqual(escapedUnicode, .string("こんにちは"))
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testObject() {
-        do {
+        scope {
             let empty = try JSONValue(from: InputByteStream("{}"))
             assertEqual(empty, .object([:]))
 
@@ -83,13 +79,11 @@ class JSONValueTests: TestCase {
             let expected: JSONValue = .object(
                 ["k1" : .string("v1"), "k2" : .string("v2")])
             assertEqual(separator, expected)
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testArray() {
-        do {
+        scope {
             let empty = try JSONValue(from: InputByteStream("[]"))
             assertEqual(empty, .array([]))
 
@@ -100,31 +94,24 @@ class JSONValueTests: TestCase {
                 ["one", "two"]
                 """))
             assertEqual(strings, .array([.string("one"), .string("two")]))
-
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testNested() {
-        do {
+        scope {
             let objectInArray = try JSONValue(from: InputByteStream("""
                 ["one", 2, {"key": false}]
                 """))
             assertEqual(objectInArray, .array([
                 .string("one"),
                 .number(.uint(2)),
-                .object(["key": .bool(false)])
-                ]))
+                .object(["key": .bool(false)])]))
 
             let arrayInObject = try JSONValue(from: InputByteStream("""
                 {"values" : [1,true]}
                 """))
             assertEqual(arrayInObject, .object(
-                ["values": .array([.number(.uint(1)), .bool(true)])]
-                ))
-        } catch {
-            fail(String(describing: error))
+                ["values": .array([.number(.uint(1)), .bool(true)])]))
         }
     }
 }

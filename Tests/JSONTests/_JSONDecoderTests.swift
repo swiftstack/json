@@ -4,7 +4,7 @@ import Stream
 
 class _JSONDecoderTests: TestCase {
     func testKeyedContainer() {
-        do {
+        scope {
             let json = InputByteStream("""
                 {"answer":42}
                 """)
@@ -15,13 +15,11 @@ class _JSONDecoderTests: TestCase {
             let container = try decoder.container(keyedBy: Keys.self)
             let answer = try container.decode(Int.self, forKey: .answer)
             assertEqual(answer, 42)
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testUnkeyedContainer() {
-        do {
+        scope {
             let json = InputByteStream("[1,[2],[3],4]")
             let decoder = try _JSONDecoder(json)
             var container = try decoder.unkeyedContainer()
@@ -35,20 +33,16 @@ class _JSONDecoderTests: TestCase {
             assertEqual(int2, 2)
             assertEqual(int3, 3)
             assertEqual(int4, 4)
-        } catch {
-            fail(String(describing: error))
         }
     }
 
     func testSingleValueContainer() {
-        do {
+        scope {
             let json = InputByteStream("true")
             let decoder = try _JSONDecoder(json)
             let container = try decoder.singleValueContainer()
             let bool = try container.decode(Bool.self)
             assertEqual(bool, true)
-        } catch {
-            fail(String(describing: error))
         }
     }
 }

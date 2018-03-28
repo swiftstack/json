@@ -2,29 +2,21 @@ import Test
 import Stream
 @testable import JSON
 
-extension OutputByteStream {
-    var string: String {
-        return String(decoding: bytes, as: UTF8.self)
-    }
-}
-
 class UnkeyedEncodingContainerTests: TestCase {
-    func testUnkeyedContainer() {
-        do {
+    func testContainer() {
+        scope {
             let output = OutputByteStream()
             let encoder = _JSONEncoder(output)
             var unkeyedContainer = encoder.unkeyedContainer()
             try unkeyedContainer.encode(1)
             try unkeyedContainer.encode(2)
             try encoder.close()
-            assertEqual(output.bytes, [UInt8]("[1,2]".utf8))
-        } catch {
-            fail(String(describing: error))
+            assertEqual(output.string, "[1,2]")
         }
     }
 
-    func testNestedUnkeyedContainer() {
-        do {
+    func testNestedContainer() {
+        scope {
             let output = OutputByteStream()
             let encoder = _JSONEncoder(output)
             var unkeyedContainer = encoder.unkeyedContainer()
@@ -33,14 +25,12 @@ class UnkeyedEncodingContainerTests: TestCase {
             var nested2 = unkeyedContainer.nestedUnkeyedContainer()
             try nested2.encode(2)
             try encoder.close()
-            assertEqual(output.bytes, [UInt8]("[[1],[2]]".utf8))
-        } catch {
-            fail(String(describing: error))
+            assertEqual(output.string, "[[1],[2]]")
         }
     }
 
     func testNull() {
-        do {
+        scope {
             let output = OutputByteStream()
             let encoder = _JSONEncoder(output)
             var unkeyedContainer = encoder.unkeyedContainer()
@@ -48,8 +38,6 @@ class UnkeyedEncodingContainerTests: TestCase {
             try unkeyedContainer.encodeNil()
             try encoder.close()
             assertEqual(output.string, "[null,null]")
-        } catch {
-            fail(String(describing: error))
         }
     }
 }

@@ -3,8 +3,8 @@ import Stream
 @testable import JSON
 
 class UnkeyedDecodingContainerTests: TestCase {
-    func testUnkeyedContainer() {
-        do {
+    func testContainer() {
+        scope {
             let decoder = try _JSONDecoder(InputByteStream("[1,2]"))
             var unkeyedContainer = try decoder.unkeyedContainer()
             assertEqual(unkeyedContainer.count, 2)
@@ -15,13 +15,11 @@ class UnkeyedDecodingContainerTests: TestCase {
             assertEqual(unkeyedContainer.isAtEnd, true)
             assertEqual(int1, 1)
             assertEqual(int2, 2)
-        } catch {
-            fail(String(describing: error))
         }
     }
 
-    func testNestedUnkeyedContainer() {
-        do {
+    func testNestedContainer() {
+        scope {
             let decoder = try _JSONDecoder(InputByteStream("[[1],[2]]"))
             var unkeyedContainer = try decoder.unkeyedContainer()
             assertEqual(unkeyedContainer.count, 2)
@@ -42,8 +40,6 @@ class UnkeyedDecodingContainerTests: TestCase {
             assertEqual(nested2.isAtEnd, true)
 
             assertEqual(unkeyedContainer.isAtEnd, true)
-        } catch {
-            fail(String(describing: error))
         }
     }
 }
