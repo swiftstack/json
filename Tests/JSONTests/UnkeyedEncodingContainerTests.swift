@@ -16,7 +16,7 @@ class UnkeyedEncodingContainerTests: TestCase {
             var unkeyedContainer = encoder.unkeyedContainer()
             try unkeyedContainer.encode(1)
             try unkeyedContainer.encode(2)
-            try? encoder.closeContainers(downTo: 0)
+            try encoder.close()
             assertEqual(output.bytes, [UInt8]("[1,2]".utf8))
         } catch {
             fail(String(describing: error))
@@ -32,7 +32,7 @@ class UnkeyedEncodingContainerTests: TestCase {
             try nested1.encode(1)
             var nested2 = unkeyedContainer.nestedUnkeyedContainer()
             try nested2.encode(2)
-            try? encoder.closeContainers(downTo: 0)
+            try encoder.close()
             assertEqual(output.bytes, [UInt8]("[[1],[2]]".utf8))
         } catch {
             fail(String(describing: error))
@@ -46,7 +46,7 @@ class UnkeyedEncodingContainerTests: TestCase {
             var unkeyedContainer = encoder.unkeyedContainer()
             try unkeyedContainer.encodeNil()
             try unkeyedContainer.encodeNil()
-            try? encoder.closeContainers(downTo: 0)
+            try encoder.close()
             assertEqual(output.string, "[null,null]")
         } catch {
             fail(String(describing: error))

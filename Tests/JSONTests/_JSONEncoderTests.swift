@@ -14,7 +14,7 @@ class _JSONEncoderTests: TestCase {
         }
         var container = encoder.container(keyedBy: Keys.self)
         try? container.encode(42, forKey: .answer)
-        try? encoder.closeContainers(downTo: 0)
+        try? encoder.close()
         assertEqual(output.bytes, expected)
     }
 
@@ -29,7 +29,7 @@ class _JSONEncoderTests: TestCase {
         var nested2 = container.nestedUnkeyedContainer()
         try? nested2.encode(3)
         try? container.encode(4)
-        try? encoder.closeContainers(downTo: 0)
+        try? encoder.close()
         assertEqual(output.bytes, expected)
     }
 

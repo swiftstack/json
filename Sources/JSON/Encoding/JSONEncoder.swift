@@ -8,7 +8,7 @@ public struct JSONEncoder {
     {
         let encoder = _JSONEncoder(writer)
         try value.encode(to: encoder)
-        try encoder.closeContainers(downTo: 0)
+        try encoder.close()
     }
 
     public func encode<Writer>(_ value: Encodable, to writer: Writer) throws
@@ -16,7 +16,7 @@ public struct JSONEncoder {
     {
         let encoder = _JSONEncoder(writer)
         try value.encode(to: encoder)
-        try encoder.closeContainers(downTo: 0)
+        try encoder.close()
     }
 }
 
@@ -25,7 +25,7 @@ extension JSONEncoder {
         let stream = OutputByteStream()
         let encoder = _JSONEncoder(stream)
         try value.encode(to: encoder)
-        try encoder.closeContainers(downTo: 0)
+        try encoder.close()
         return stream.bytes
     }
 
@@ -33,7 +33,7 @@ extension JSONEncoder {
         let stream = OutputByteStream()
         let encoder = _JSONEncoder(stream)
         try value.encode(to: encoder)
-        try encoder.closeContainers(downTo: 0)
+        try encoder.close()
         return stream.bytes
     }
 }
@@ -50,6 +50,10 @@ class _JSONEncoder<Writer: StreamWriter>: Encoder {
 
     init(_ writer: Writer) {
         self.storage = writer
+    }
+
+    func close() throws {
+        try closeContainers(downTo: 0)
     }
 
     enum ContainerType {
