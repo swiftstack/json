@@ -12,7 +12,7 @@ class JSONTests: TestCase {
                 let answer: Int = 42
                 let hello: String = "Hello, World!"
             }
-            let bytes = try JSONEncoder().encode(Model())
+            let bytes = try JSON.encode(Model())
             let json = String(decoding: bytes, as: UTF8.self)
             assertEqual(json, expected)
         }

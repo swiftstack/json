@@ -1,47 +1,18 @@
 import Stream
 
-public struct JSONEncoder {
-    public init() {}
-
-    public func encode<Model>(_ value: Model, to writer: StreamWriter) throws
-        where Model: Encodable
+extension JSON {
+    public static func withScopedEncoder<T>(
+        using writer: StreamWriter,
+        _ body: (Encoder) throws -> T) throws -> T
     {
         let encoder = Encoder(writer)
-        try value.encode(to: encoder)
+        let result = try body(encoder)
         try encoder.close()
-    }
-
-    public func encode(
-        encodable value: Encodable,
-        to writer: StreamWriter) throws
-    {
-        let encoder = Encoder(writer)
-        try value.encode(to: encoder)
-        try encoder.close()
+        return result
     }
 }
 
-extension JSONEncoder {
-    public func encode<Model>(_ value: Model) throws -> [UInt8]
-        where Model: Encodable
-    {
-        let stream = OutputByteStream()
-        let encoder = Encoder(stream)
-        try value.encode(to: encoder)
-        try encoder.close()
-        return stream.bytes
-    }
-
-    public func encode(encodable value: Encodable) throws -> [UInt8] {
-        let stream = OutputByteStream()
-        let encoder = Encoder(stream)
-        try value.encode(to: encoder)
-        try encoder.close()
-        return stream.bytes
-    }
-}
-
-class Encoder: Swift.Encoder {
+public class Encoder: Swift.Encoder {
     public var codingPath: [CodingKey] {
         return []
     }

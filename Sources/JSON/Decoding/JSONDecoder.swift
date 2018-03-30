@@ -1,32 +1,23 @@
 import Stream
 
-public class JSONDecoder {
-    public init() { }
-}
-
-extension JSONDecoder {
-    public func decode<Model: Decodable>(
-        _ type: Model.Type,
-        from reader: StreamReader) throws -> Model
+extension JSON {
+    // currently pointless, designed for future lazy reading
+    public static func withScopedDecoder<T>(
+        using reader: StreamReader,
+        _ body: (Decoder) throws -> T) throws -> T
     {
         let decoder = try Decoder(reader)
-        return try Model(from: decoder)
-    }
-
-    public func decode(
-        decodable type: Decodable.Type,
-        from reader: StreamReader) throws -> Decodable
-    {
-        let decoder = try Decoder(reader)
-        return try type.init(from: decoder)
+        let result = try body(decoder)
+        try decoder.close()
+        return result
     }
 }
 
-class Decoder: Swift.Decoder {
-    var codingPath: [CodingKey] {
+public class Decoder: Swift.Decoder {
+    public var codingPath: [CodingKey] {
         return []
     }
-    var userInfo: [CodingUserInfoKey : Any] {
+    public var userInfo: [CodingUserInfoKey : Any] {
         return [:]
     }
 
@@ -40,7 +31,11 @@ class Decoder: Swift.Decoder {
         self.json = try JSON.Value(from: stream)
     }
 
-    func container<Key>(
+    func close() throws {
+        // consume the rest of stream
+    }
+
+    public func container<Key>(
         keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key>
     {
         guard case .object(let dictionary) = json else {
@@ -50,14 +45,14 @@ class Decoder: Swift.Decoder {
         return KeyedDecodingContainer(container)
     }
 
-    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+    public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
         guard case .array(let array) = json else {
             throw DecodingError.typeMismatch([JSON.Value].self, nil)
         }
         return JSONUnkeyedDecodingContainer(array)
     }
 
-    func singleValueContainer() throws -> SingleValueDecodingContainer {
+    public func singleValueContainer() throws -> SingleValueDecodingContainer {
         return JSONSingleValueDecodingContainer(json)
     }
 }
