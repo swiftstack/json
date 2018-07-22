@@ -14,7 +14,7 @@ extension JSON.Value {
         case .curlyBracketOpen:
             self = .object(try [String : JSON.Value](from: stream))
 
-        case .bracketOpen:
+        case .squareBracketOpen:
             self = .array(try [JSON.Value](from: stream))
 
         case .n:
@@ -37,6 +37,25 @@ extension JSON.Value {
 
         default:
             throw JSON.Error.invalidJSON
+        }
+    }
+
+    public func encode(to stream: StreamWriter) throws {
+        switch self {
+        case .null:
+            try stream.write(.null)
+        case .bool(let value):
+            try stream.write(value ? .true : .false)
+        case .number(let number):
+            try number.encode(to: stream)
+        case .string(let string):
+            try stream.write(.quote)
+            try stream.write(string)
+            try stream.write(.quote)
+        case .array(let values):
+            try values.encode(to: stream)
+        case .object(let object):
+            try object.encode(to: stream)
         }
     }
 }

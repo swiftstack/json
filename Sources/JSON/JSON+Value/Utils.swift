@@ -6,7 +6,8 @@ extension Set where Element == UInt8 {
     static var whitespaces: Set<UInt8> = [.whitespace, .cr, .lf, .tab]
 
     static let terminators: Set<UInt8> = [
-        .whitespace, .cr, .lf, .tab, .comma, .curlyBracketClose, .bracketClose
+        .whitespace, .cr, .lf, .tab, .comma,
+        .curlyBracketClose, .squareBracketClose
     ]
 }
 

@@ -41,7 +41,7 @@ public class Encoder: Swift.Encoder {
     func openContainer(_ type: ContainerType) throws {
         switch type {
         case .keyed: try storage.write(.curlyBracketOpen)
-        case .unkeyed: try storage.write(.bracketOpen)
+        case .unkeyed: try storage.write(.squareBracketOpen)
         case .single: break
         }
         openedContainers.append(type)
@@ -51,7 +51,7 @@ public class Encoder: Swift.Encoder {
         if let type = openedContainers.popLast() {
             switch type {
             case .keyed: try storage.write(.curlyBracketClose)
-            case .unkeyed: try storage.write(.bracketClose)
+            case .unkeyed: try storage.write(.squareBracketClose)
             case .single: break
             }
         }

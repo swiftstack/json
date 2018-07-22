@@ -13,8 +13,8 @@ extension UInt8 {
     static let lf = UInt8(ascii: "\n")
     static let tab = UInt8(ascii: "\t")
 
-    static let bracketOpen = UInt8(ascii: "[")
-    static let bracketClose = UInt8(ascii: "]")
+    static let squareBracketOpen = UInt8(ascii: "[")
+    static let squareBracketClose = UInt8(ascii: "]")
     static let curlyBracketOpen = UInt8(ascii: "{")
     static let curlyBracketClose = UInt8(ascii: "}")
 

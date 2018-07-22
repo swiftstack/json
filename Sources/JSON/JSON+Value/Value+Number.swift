@@ -37,6 +37,14 @@ extension JSON.Value.Number {
             }
         }
     }
+
+    public func encode(to stream: StreamWriter) throws {
+        switch self {
+        case .int(let value): try stream.write(String(value))
+        case .uint(let value): try stream.write(String(value))
+        case .double(let value): try stream.write(String(value))
+        }
+    }
 }
 
 extension JSON.Value.Number: Equatable {
