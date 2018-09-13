@@ -14,7 +14,7 @@ extension Dictionary where Key == String, Value == JSON.Value {
             case .curlyBracketClose:
                 try stream.consume(count: 1)
                 break loop
-            case .quote:
+            case .doubleQuote:
                 let key = try String(from: stream)
                 try stream.consume(set: .whitespaces)
                 guard try stream.consume(.colon) else {
@@ -34,9 +34,9 @@ extension Dictionary where Key == String, Value == JSON.Value {
     public func encode(to stream: StreamWriter) throws {
         try stream.write(.curlyBracketOpen)
         for (key, value) in self {
-            try stream.write(.quote)
+            try stream.write(.doubleQuote)
             try stream.write(key)
-            try stream.write(.quote)
+            try stream.write(.doubleQuote)
             try stream.write(.colon)
             try value.encode(to: stream)
         }

@@ -2,7 +2,7 @@ import Stream
 
 extension String {
     init(from stream: StreamReader) throws {
-        guard try stream.consume(.quote) else {
+        guard try stream.consume(.doubleQuote) else {
             throw JSON.Error.invalidJSON
         }
 
@@ -10,7 +10,7 @@ extension String {
 
         func readEscaped() throws {
             switch try stream.read(UInt8.self) {
-            case .quote: result.append(.quote)
+            case .doubleQuote: result.append(.doubleQuote)
             case .n: result.append(.lf)
             case .r: result.append(.cr)
             case .t: result.append(.tab)
@@ -36,7 +36,7 @@ extension String {
         loop: while true {
             let character = try stream.read(UInt8.self)
             switch character {
-            case .quote:
+            case .doubleQuote:
                 break loop
             case .backslash:
                 try readEscaped()

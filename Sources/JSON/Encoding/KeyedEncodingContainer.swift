@@ -26,9 +26,9 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
     }
 
     mutating func writeKey(_ key: String) throws {
-        try encoder.storage.write(.quote)
+        try encoder.storage.write(.doubleQuote)
         try encoder.storage.write(key)
-        try encoder.storage.write(.quote)
+        try encoder.storage.write(.doubleQuote)
         try encoder.storage.write(.colon)
     }
 
