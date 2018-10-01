@@ -8,10 +8,10 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
         return []
     }
 
-    let encoder: Encoder
+    let encoder: JSON.Encoder
     let nestingLevel: Int
 
-    init(_ encoder: Encoder) {
+    init(_ encoder: JSON.Encoder) {
         self.encoder = encoder
         nestingLevel = encoder.openedContainers.count
     }

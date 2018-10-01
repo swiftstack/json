@@ -93,7 +93,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     func decodeIfPresent<T>(
         _ type: T.Type
     ) throws -> T? where T : Decodable {
-        let decoder = try Decoder(array[currentIndex])
+        let decoder = try JSON.Decoder(array[currentIndex])
         let value = try T(from: decoder)
         currentIndex += 1
         return value

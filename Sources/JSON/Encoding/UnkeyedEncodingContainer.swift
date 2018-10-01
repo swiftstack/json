@@ -5,11 +5,11 @@ struct JSONUnkeyedEncodingContainer: UnkeyedEncodingContainer {
         return []
     }
 
-    let encoder: Encoder
+    let encoder: JSON.Encoder
     let nestingLevel: Int
     var count: Int
 
-    init(_ encoder: Encoder) {
+    init(_ encoder: JSON.Encoder) {
         self.encoder = encoder
         self.nestingLevel = encoder.openedContainers.count
         self.count = 0

@@ -5,7 +5,7 @@ import Stream
 class UnkeyedDecodingContainerTests: TestCase {
     func testContainer() {
         scope {
-            let decoder = try Decoder(InputByteStream("[1,2]"))
+            let decoder = try JSON.Decoder(InputByteStream("[1,2]"))
             var unkeyedContainer = try decoder.unkeyedContainer()
             assertEqual(unkeyedContainer.count, 2)
             assertEqual(unkeyedContainer.isAtEnd, false)
@@ -20,7 +20,7 @@ class UnkeyedDecodingContainerTests: TestCase {
 
     func testNestedContainer() {
         scope {
-            let decoder = try Decoder(InputByteStream("[[1],[2]]"))
+            let decoder = try JSON.Decoder(InputByteStream("[[1],[2]]"))
             var unkeyedContainer = try decoder.unkeyedContainer()
             assertEqual(unkeyedContainer.count, 2)
             assertEqual(unkeyedContainer.isAtEnd, false)

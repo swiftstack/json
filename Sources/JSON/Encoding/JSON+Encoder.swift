@@ -12,93 +12,95 @@ extension JSON {
     }
 }
 
-public class Encoder: Swift.Encoder {
-    public var codingPath: [CodingKey] {
-        return []
-    }
-    public var userInfo: [CodingUserInfoKey : Any] {
-        return [:]
-    }
-
-    let storage: StreamWriter
-
-    init(_ writer: StreamWriter) {
-        self.storage = writer
-    }
-
-    func close() throws {
-        try closeContainers(downTo: 0)
-    }
-
-    enum ContainerType {
-        case keyed
-        case unkeyed
-        case single
-    }
-
-    var openedContainers = ContiguousArray<ContainerType>()
-
-    func openContainer(_ type: ContainerType) throws {
-        switch type {
-        case .keyed: try storage.write(.curlyBracketOpen)
-        case .unkeyed: try storage.write(.squareBracketOpen)
-        case .single: break
+extension JSON {
+    public class Encoder: Swift.Encoder {
+        public var codingPath: [CodingKey] {
+            return []
         }
-        openedContainers.append(type)
-    }
+        public var userInfo: [CodingUserInfoKey : Any] {
+            return [:]
+        }
 
-    func closeContainer() throws {
-        if let type = openedContainers.popLast() {
+        let storage: StreamWriter
+
+        init(_ writer: StreamWriter) {
+            self.storage = writer
+        }
+
+        func close() throws {
+            try closeContainers(downTo: 0)
+        }
+
+        enum ContainerType {
+            case keyed
+            case unkeyed
+            case single
+        }
+
+        var openedContainers = ContiguousArray<ContainerType>()
+
+        func openContainer(_ type: ContainerType) throws {
             switch type {
-            case .keyed: try storage.write(.curlyBracketClose)
-            case .unkeyed: try storage.write(.squareBracketClose)
+            case .keyed: try storage.write(.curlyBracketOpen)
+            case .unkeyed: try storage.write(.squareBracketOpen)
             case .single: break
             }
+            openedContainers.append(type)
         }
-    }
 
-    func closeContainers(downTo index: Int) throws {
-        precondition(openedContainers.count >= index, "invalid stack")
-        guard openedContainers.count > index else {
-            return
+        func closeContainer() throws {
+            if let type = openedContainers.popLast() {
+                switch type {
+                case .keyed: try storage.write(.curlyBracketClose)
+                case .unkeyed: try storage.write(.squareBracketClose)
+                case .single: break
+                }
+            }
         }
-        while openedContainers.count > index {
-            try closeContainer()
-        }
-    }
 
-    public func container<Key>(
-        keyedBy type: Key.Type) -> KeyedEncodingContainer<Key>
-    {
-        do {
-            try openContainer(.keyed)
-            let container = JSONKeyedEncodingContainer<Key>(self)
-            return KeyedEncodingContainer(container)
-        } catch {
-            return KeyedEncodingContainer(KeyedEncodingContainerError())
+        func closeContainers(downTo index: Int) throws {
+            precondition(openedContainers.count >= index, "invalid stack")
+            guard openedContainers.count > index else {
+                return
+            }
+            while openedContainers.count > index {
+                try closeContainer()
+            }
         }
-    }
 
-    public func unkeyedContainer() -> UnkeyedEncodingContainer {
-        do {
-            try openContainer(.unkeyed)
-            return JSONUnkeyedEncodingContainer(self)
-        } catch {
-            return UnkeyedEncodingContainerError()
+        public func container<Key>(
+            keyedBy type: Key.Type) -> KeyedEncodingContainer<Key>
+        {
+            do {
+                try openContainer(.keyed)
+                let container = JSONKeyedEncodingContainer<Key>(self)
+                return KeyedEncodingContainer(container)
+            } catch {
+                return KeyedEncodingContainer(KeyedEncodingContainerError())
+            }
         }
-    }
 
-    public func singleValueContainer() -> SingleValueEncodingContainer {
-        do {
-            try openContainer(.single)
-            return JSONSingleValueEncodingContainer(self)
-        } catch {
-            return SingleValueEncodingContainerError()
+        public func unkeyedContainer() -> UnkeyedEncodingContainer {
+            do {
+                try openContainer(.unkeyed)
+                return JSONUnkeyedEncodingContainer(self)
+            } catch {
+                return UnkeyedEncodingContainerError()
+            }
+        }
+
+        public func singleValueContainer() -> SingleValueEncodingContainer {
+            do {
+                try openContainer(.single)
+                return JSONSingleValueEncodingContainer(self)
+            } catch {
+                return SingleValueEncodingContainerError()
+            }
         }
     }
 }
 
-extension Encoder {
+extension JSON.Encoder {
     func encodeNil() throws {
         try storage.write(.null)
     }

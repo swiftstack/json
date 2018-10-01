@@ -8,7 +8,7 @@ class DecoderTests: TestCase {
             let json = InputByteStream("""
                 {"answer":42}
                 """)
-            let decoder = try Decoder(json)
+            let decoder = try JSON.Decoder(json)
             enum Keys: CodingKey {
                 case answer
             }
@@ -21,7 +21,7 @@ class DecoderTests: TestCase {
     func testUnkeyedContainer() {
         scope {
             let json = InputByteStream("[1,[2],[3],4]")
-            let decoder = try Decoder(json)
+            let decoder = try JSON.Decoder(json)
             var container = try decoder.unkeyedContainer()
             let int1 = try container.decode(Int.self)
             var nested1 = try container.nestedUnkeyedContainer()
@@ -39,7 +39,7 @@ class DecoderTests: TestCase {
     func testSingleValueContainer() {
         scope {
             let json = InputByteStream("true")
-            let decoder = try Decoder(json)
+            let decoder = try JSON.Decoder(json)
             let container = try decoder.singleValueContainer()
             let bool = try container.decode(Bool.self)
             assertEqual(bool, true)
