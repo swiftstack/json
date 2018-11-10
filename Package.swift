@@ -11,6 +11,9 @@ let package = Package(
             url: "https://github.com/swift-stack/platform.git",
             .branch("master")),
         .package(
+            url: "https://github.com/swift-stack/codable.git",
+            .branch("master")),
+        .package(
             url: "https://github.com/swift-stack/stream.git",
             .branch("master")),
         .package(
@@ -18,7 +21,11 @@ let package = Package(
             .branch("master")),
     ],
     targets: [
-        .target(name: "JSON", dependencies: ["Platform", "Stream"]),
-        .testTarget(name: "JSONTests", dependencies: ["JSON", "Test"])
+        .target(
+            name: "JSON", 
+            dependencies: ["Platform", "Codable", "Stream"]),
+        .testTarget(
+            name: "JSONTests", 
+            dependencies: ["JSON", "Test"])
     ]
 )
