@@ -3,20 +3,16 @@ import Stream
 import JSON // don't use @testable
 
 class PublicAPITests: TestCase {
-    func testJSONEncoder() {
-        scope {
-            try JSON.withScopedEncoder(using: OutputByteStream()) { encoder in
+    func testJSONEncoder() throws {
+        try JSON.withScopedEncoder(using: OutputByteStream()) { encoder in
 
-            }
         }
     }
 
-    func testJSONDecoder() {
-        scope {
-            try JSON.withScopedDecoder(using: InputByteStream("null"))
-            { decoder in
+    func testJSONDecoder() throws {
+        try JSON.withScopedDecoder(using: InputByteStream("null"))
+        { decoder in
 
-            }
         }
     }
 }
