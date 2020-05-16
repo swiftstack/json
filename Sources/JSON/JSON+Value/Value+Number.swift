@@ -21,19 +21,18 @@ extension JSON.Value.Number {
         }
         string.append(0)
 
-        let pointer = UnsafeRawPointer(string)
-            .assumingMemoryBound(to: Int8.self)
+        let casted = unsafeBitCast(string, to: [Int8].self)
 
         switch isNegative {
         case true:
             switch isInteger {
-            case true: self = .int(-strtol(pointer, nil, 10))
-            case false: self = .double(-strtod(pointer, nil))
+            case true: self = .int(-strtol(casted, nil, 10))
+            case false: self = .double(-strtod(casted, nil))
             }
         case false:
             switch isInteger {
-            case true: self = .uint(strtoul(pointer, nil, 10))
-            case false: self = .double(strtod(pointer, nil))
+            case true: self = .uint(strtoul(casted, nil, 10))
+            case false: self = .double(strtod(casted, nil))
             }
         }
     }
