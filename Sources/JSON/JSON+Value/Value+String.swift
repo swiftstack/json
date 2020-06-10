@@ -34,19 +34,19 @@ extension String {
         }
 
         loop: while true {
-            let character = try stream.read(UInt8.self)
-            switch character {
-            case .doubleQuote:
-                break loop
-            case .backslash:
-                try readEscaped()
-            case _ where character.contained(in: .controls):
-                throw JSON.Error.invalidJSON
-            default:
-                result.append(character)
+            let byte = try stream.read(UInt8.self)
+            switch byte {
+            case .doubleQuote: break loop
+            case .backslash: try readEscaped()
+            case _ where !byte.isControl: result.append(byte)
+            default: throw JSON.Error.invalidJSON
             }
         }
 
         self = String(decoding: result, as: UTF8.self)
     }
+}
+
+extension UInt8 {
+    var isControl: Bool { Set<UInt8>.controls.contains(self) }
 }
