@@ -4,7 +4,7 @@ extension JSON.Value {
     public init(from stream: StreamReader) throws {
         try stream.consume(set: .whitespaces)
 
-        func ensureValue(_ value: [UInt8]) throws {
+        func consume(_ value: [UInt8]) throws {
             guard try stream.consume(sequence: value) else {
                 throw JSON.Error.invalidJSON
             }
@@ -18,15 +18,15 @@ extension JSON.Value {
             self = .array(try [JSON.Value](from: stream))
 
         case .n:
-            try ensureValue(.null)
+            try consume(.null)
             self = .null
 
         case .t:
-            try ensureValue(.true)
+            try consume(.true)
             self = .bool(true)
 
         case .f:
-            try ensureValue(.false)
+            try consume(.false)
             self = .bool(false)
 
         case (.zero)...(.nine), .hyphen:
