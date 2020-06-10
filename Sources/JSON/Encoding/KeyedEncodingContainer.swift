@@ -42,8 +42,10 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
     }
 
     mutating func encodeNil(forKey key: K) throws {
-        // TODO:
-        throw JSON.Error.cantEncodeNil
+        try closeNestedIfNeeded()
+        try writeCommaIfNeeded()
+        try writeKey(key.stringValue)
+        try encoder.storage.write(.null)
     }
 
     mutating func encode(_ value: Bool, forKey key: K) throws {

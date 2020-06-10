@@ -20,10 +20,7 @@ struct JSONSingleValueDecodingContainer: SingleValueDecodingContainer {
     }
 
     func decodeNil() -> Bool {
-        guard case .null = value else {
-            return false
-        }
-        return true
+        return value == .null
     }
 
     func decode(_ type: Bool.Type) throws -> Bool {

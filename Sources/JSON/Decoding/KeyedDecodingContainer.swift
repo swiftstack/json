@@ -25,9 +25,6 @@ struct JSONKeyedDecodingContainer<K : CodingKey>
         }
 
         guard let value = T(object) else {
-            if case .null = object {
-                return nil
-            }
             throw DecodingError.typeMismatch(
                 type, .incompatible(with: object, for: key))
         }
@@ -52,8 +49,10 @@ struct JSONKeyedDecodingContainer<K : CodingKey>
     }
 
     func decodeNil(forKey key: K) throws -> Bool {
-        // TODO:
-        throw JSON.Error.cantDecodeNil
+        guard let object = object[key.stringValue] else {
+            throw DecodingError.keyNotFound(key, nil)
+        }
+        return object == .null
     }
 
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
