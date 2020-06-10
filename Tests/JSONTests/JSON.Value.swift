@@ -1,7 +1,7 @@
 import Test
 @testable import JSON
 
-class ValueTests: TestCase {
+class JSONValueTests: TestCase {
     func testObject() {
         let value = JSON.Value.object(["key": .string("value")])
         expect(value["key"] == .string("value"))

@@ -1,7 +1,7 @@
 import Test
 @testable import JSON
 
-class DynamicLookupTests: TestCase {
+class JSONValueDynamicLookupTests: TestCase {
     func testGet() {
         let value = JSON.Value.object(["key": .string("value")])
         expect(value.key == .string("value"))

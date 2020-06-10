@@ -10,7 +10,7 @@ class UnkeyedEncodingContainerTests: TestCase {
         try unkeyedContainer.encode(1)
         try unkeyedContainer.encode(2)
         try encoder.close()
-        expect(output.string == "[1,2]")
+        expect(output.stringValue == "[1,2]")
     }
 
     func testNestedContainer() throws {
@@ -22,7 +22,7 @@ class UnkeyedEncodingContainerTests: TestCase {
         var nested2 = unkeyedContainer.nestedUnkeyedContainer()
         try nested2.encode(2)
         try encoder.close()
-        expect(output.string == "[[1],[2]]")
+        expect(output.stringValue == "[[1],[2]]")
     }
 
     func testNull() throws {
@@ -32,6 +32,6 @@ class UnkeyedEncodingContainerTests: TestCase {
         try unkeyedContainer.encodeNil()
         try unkeyedContainer.encodeNil()
         try encoder.close()
-        expect(output.string == "[null,null]")
+        expect(output.stringValue == "[null,null]")
     }
 }

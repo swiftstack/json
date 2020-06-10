@@ -15,7 +15,7 @@ class EncoderTests: TestCase {
         var container = encoder.container(keyedBy: Keys.self)
         try container.encode(42, forKey: .answer)
         try encoder.close()
-        expect(output.string == expected)
+        expect(output.stringValue == expected)
     }
 
     func testUnkeyedContainer() throws {
@@ -30,7 +30,7 @@ class EncoderTests: TestCase {
         try nested2.encode(3)
         try container.encode(4)
         try encoder.close()
-        expect(output.string == expected)
+        expect(output.stringValue == expected)
     }
 
     func testSingleValueContainer() throws {
@@ -39,6 +39,6 @@ class EncoderTests: TestCase {
         let encoder = JSON.Encoder(output)
         var container = encoder.singleValueContainer()
         try container.encode(true)
-        expect(output.string == expected)
+        expect(output.stringValue == expected)
     }
 }

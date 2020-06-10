@@ -3,9 +3,7 @@ import Test
 
 class JSONEncoderTests: TestCase {
     func testKeyed() throws {
-        let expected = """
-            {"answer":42,"hello":"Hello, World"}
-            """
+        let expected = #"{"answer":42,"hello":"Hello, World"}"#
         struct Model: Encodable {
             let answer: Int = 42
             let hello: String = "Hello, World"
@@ -16,9 +14,7 @@ class JSONEncoderTests: TestCase {
     }
 
     func testKeyedNested() throws {
-        let expected = """
-            {"answer":42,"nested":{"hello":"Hello, World"}}
-            """
+        let expected = #"{"answer":42,"nested":{"hello":"Hello, World"}}"#
         struct Model: Encodable {
             struct Nested: Encodable {
                 let hello = "Hello, World"
@@ -32,9 +28,7 @@ class JSONEncoderTests: TestCase {
     }
 
     func testKeyedInTheMiddle() throws {
-        let expected = """
-            {"nested":{"hello":"Hello, World"},"answer":42}
-            """
+        let expected = #"{"nested":{"hello":"Hello, World"},"answer":42}"#
         struct Model: Encodable {
             struct Nested: Encodable {
                 let hello = "Hello, World"
@@ -48,9 +42,7 @@ class JSONEncoderTests: TestCase {
     }
 
     func testNestedInTheMiddle() throws {
-        let expected = """
-            {"nested":{"array":[1,2]},"answer":42}
-            """
+        let expected = #"{"nested":{"array":[1,2]},"answer":42}"#
         struct Model: Encodable {
             struct Nested: Encodable {
                 let array: [Int] = [1,2]
@@ -64,9 +56,7 @@ class JSONEncoderTests: TestCase {
     }
 
     func testNestedArrayInTheMiddle() throws {
-        let expected = """
-            {"nested":{"array":[[1,2],[3,4]]},"answer":42}
-            """
+        let expected = #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#
         struct Model: Encodable {
             struct Nested: Encodable {
                 let array: [[Int]] = [[1,2],[3,4]]
@@ -92,9 +82,7 @@ class JSONEncoderTests: TestCase {
     }
 
     func testEnum() throws {
-        let expected = """
-            {"single":1,"array":[1,2,3]}
-            """
+        let expected = #"{"single":1,"array":[1,2,3]}"#
         enum Number: Int, Encodable {
             case one = 1
             case two
@@ -110,9 +98,7 @@ class JSONEncoderTests: TestCase {
     }
 
     func testEncodable() throws {
-        let expected = """
-            {"answer":42,"hello":"Hello, World"}
-            """
+        let expected = #"{"answer":42,"hello":"Hello, World"}"#
         struct Model: Encodable {
             let answer: Int = 42
             let hello: String = "Hello, World"

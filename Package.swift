@@ -16,10 +16,13 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "JSON", 
+            name: "JSON",
             dependencies: ["Platform", "Codable", "Stream"]),
         .testTarget(
-            name: "JSONTests", 
+            name: "JSONTests",
+            dependencies: ["JSON", "Test"]),
+        .testTarget(
+            name: "JSONCodableTests",
             dependencies: ["JSON", "Test"])
     ]
 )

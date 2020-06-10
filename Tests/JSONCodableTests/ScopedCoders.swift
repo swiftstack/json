@@ -2,7 +2,7 @@ import Test
 import Stream
 import JSON // don't use @testable
 
-class PublicAPITests: TestCase {
+class ScopedCodersTests: TestCase {
     func testJSONEncoder() throws {
         try JSON.withScopedEncoder(using: OutputByteStream()) { encoder in
 

@@ -4,22 +4,45 @@ import Stream
 
 class JSONDecoderTests: TestCase {
     func testKeyed() throws {
+        let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
+        struct Model: Decodable {
+            let answer: Int
+            let hello: String
+        }
+        let model = try JSON.decode(Model.self, from: json)
+        expect(model.answer == 42)
+        expect(model.hello == "Hello, World!")
+    }
+
+    func testDecodeEscaped() throws {
         let json = InputByteStream("""
-            {"answer":42,"hello":"Hello, World!"}
+            {
+                "answer":42,
+                "hello":"Hello, World!"
+            }
             """)
         struct Model: Decodable {
             let answer: Int
             let hello: String
         }
-        let object = try JSON.decode(Model.self, from: json)
-        expect(object.answer == 42)
-        expect(object.hello == "Hello, World!")
+        let model = try JSON.decode(Model.self, from: json)
+        expect(model.answer == 42)
+        expect(model.hello == "Hello, World!")
+    }
+
+    func testDecodeEscapedUnicode() throws {
+        let json = InputByteStream(
+            #"{"hello":"\u3053\u3093\u306b\u3061\u306f"}"#)
+        struct Model: Decodable {
+            let hello: String
+        }
+        let model = try JSON.decode(Model.self, from: json)
+        expect(model.hello == "こんにちは")
     }
 
     func testKeyedNested() throws {
-        let json = InputByteStream("""
-            {"answer":42,"nested":{"hello":"Hello, World!"}}
-            """)
+        let json = InputByteStream(
+            #"{"answer":42,"nested":{"hello":"Hello, World!"}}"#)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let hello: String
@@ -33,9 +56,8 @@ class JSONDecoderTests: TestCase {
     }
 
     func testKeyedNestedInTheMiddle() throws {
-        let json = InputByteStream("""
-            {"nested":{"hello":"Hello, World!"},"answer":42}
-            """)
+        let json = InputByteStream(
+            #"{"nested":{"hello":"Hello, World!"},"answer":42}"#)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let hello: String
@@ -49,9 +71,8 @@ class JSONDecoderTests: TestCase {
     }
 
     func testNestedArrayInTheMiddle() throws {
-        let json = InputByteStream("""
-            {"nested":{"array":[1,2]},"answer":42}
-            """)
+        let json = InputByteStream(
+            #"{"nested":{"array":[1,2]},"answer":42}"#)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let array: [Int]
@@ -65,9 +86,8 @@ class JSONDecoderTests: TestCase {
     }
 
     func testNestedArraysInTheMiddle() throws {
-        let json = InputByteStream("""
-            {"nested":{"array":[[1,2],[3,4]]},"answer":42}
-            """)
+        let json = InputByteStream(
+            #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#)
         struct Model: Decodable {
             struct Nested: Decodable {
                 let array: [[Int]]
@@ -95,9 +115,7 @@ class JSONDecoderTests: TestCase {
     }
 
     func testEnum() throws {
-        let json = InputByteStream("""
-            {"single":1,"array":[1,2,3]}
-            """)
+        let json = InputByteStream(#"{"single":1,"array":[1,2,3]}"#)
         enum Number: Int, Decodable {
             case one = 1
             case two
@@ -113,9 +131,7 @@ class JSONDecoderTests: TestCase {
     }
 
     func testDecodable() throws {
-        let json = InputByteStream("""
-            {"answer":42,"hello":"Hello, World!"}
-            """)
+        let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
         struct Model: Decodable {
             let answer: Int
             let hello: String
