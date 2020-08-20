@@ -123,7 +123,7 @@ class JSONDecoderTests: TestCase {
         }
         struct Model: Decodable {
             let single: Number
-            let array: [Number] = [.one, .two, .three]
+            let array: [Number]
         }
         let object = try JSON.decode(Model.self, from: json)
         expect(object.single == .one)
