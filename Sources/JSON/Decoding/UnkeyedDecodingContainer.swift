@@ -3,11 +3,13 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
         return []
     }
 
-    var currentIndex: Int
+    var currentIndex: Int = 0
     let array: [JSON.Value]
-    init(_ array: [JSON.Value]) {
+    let options: JSON.Decoder.Options
+
+    init(_ array: [JSON.Value], _ options: JSON.Decoder.Options) {
         self.array = array
-        self.currentIndex = 0
+        self.options = options
     }
 
     var count: Int? {
@@ -23,7 +25,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
         _ type: T.Type
     ) throws -> T? {
         guard let value = T(array[currentIndex]) else {
-            if case .null = array[currentIndex] {
+            if options.parseNullAsOptional, array[currentIndex] == .null {
                 currentIndex += 1
                 return nil
             }
@@ -93,7 +95,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     func decodeIfPresent<T>(
         _ type: T.Type
     ) throws -> T? where T : Decodable {
-        let decoder = try JSON.Decoder(array[currentIndex])
+        let decoder = try JSON.Decoder(array[currentIndex], options: options)
         let value = try T(from: decoder)
         currentIndex += 1
         return value
@@ -106,7 +108,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
             throw DecodingError.typeMismatch([String : JSON.Value].self, nil)
         }
         currentIndex += 1
-        let container = JSONKeyedDecodingContainer<NestedKey>(object)
+        let container = JSONKeyedDecodingContainer<NestedKey>(object, options)
         return KeyedDecodingContainer(container)
     }
 
@@ -115,7 +117,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
             throw DecodingError.typeMismatch([JSON.Value].self, nil)
         }
         currentIndex += 1
-        return JSONUnkeyedDecodingContainer(array)
+        return JSONUnkeyedDecodingContainer(array, options)
     }
 
     func superDecoder() throws -> Swift.Decoder {

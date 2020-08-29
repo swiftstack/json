@@ -3,9 +3,12 @@ struct JSONSingleValueDecodingContainer: SingleValueDecodingContainer {
         return []
     }
 
-    var value: JSON.Value
-    init(_ value: JSON.Value) {
+    let value: JSON.Value
+    let options: JSON.Decoder.Options
+
+    init(_ value: JSON.Value, _ options: JSON.Decoder.Options) {
         self.value = value
+        self.options = options
     }
 
     @inline(__always)
@@ -80,7 +83,7 @@ struct JSONSingleValueDecodingContainer: SingleValueDecodingContainer {
     }
 
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        let decoder = try JSON.Decoder(value)
+        let decoder = try JSON.Decoder(value, options: options)
         return try T(from: decoder)
     }
 }

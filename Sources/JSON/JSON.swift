@@ -55,9 +55,11 @@ extension JSON {
 
     public static func decode<Model: Decodable>(
         _ type: Model.Type,
-        from stream: StreamReader) throws -> Model
+        from stream: StreamReader,
+        options: Decoder.Options = .default) throws -> Model
     {
-        return try withScopedDecoder(using: stream) { decoder in
+        return try withScopedDecoder(using: stream, options: options)
+        { decoder in
             return try Model(from: decoder)
         }
     }
@@ -77,9 +79,11 @@ extension JSON {
 
     public static func decode(
         decodable type: Decodable.Type,
-        from stream: StreamReader) throws -> Decodable
+        from stream: StreamReader,
+        options: Decoder.Options = .default) throws -> Decodable
     {
-        return try withScopedDecoder(using: stream) { decoder in
+        return try withScopedDecoder(using: stream, options: options)
+        { decoder in
             return try type.init(from: decoder)
         }
     }
@@ -96,9 +100,10 @@ extension JSON {
 
     public static func decode<T: Decodable>(
         _ type: T.Type,
-        from json: [UInt8]) throws -> T
+        from json: [UInt8],
+        options: Decoder.Options = .default) throws -> T
     {
-        return try decode(type, from: InputByteStream(json))
+        return try decode(type, from: InputByteStream(json), options: options)
     }
 
     public static func encode(encodable value: Encodable) throws -> [UInt8] {
@@ -109,8 +114,12 @@ extension JSON {
 
     public static func decode(
         decodable type: Decodable.Type,
-        from json: [UInt8]) throws -> Decodable
+        from json: [UInt8],
+        options: Decoder.Options = .default) throws -> Decodable
     {
-        return try decode(decodable: type, from: InputByteStream(json))
+        return try decode(
+            decodable: type,
+            from: InputByteStream(json),
+            options: options)
     }
 }

@@ -4,9 +4,10 @@ extension JSON {
     // FIXME: currently pointless, designed for future lazy reading
     public static func withScopedDecoder<T>(
         using reader: StreamReader,
+        options: JSON.Decoder.Options = .default,
         _ body: (Decoder) throws -> T) throws -> T
     {
-        let decoder = try Decoder(reader)
+        let decoder = try Decoder(reader, options: options)
         let result = try body(decoder)
         try decoder.close()
         return result
@@ -15,22 +16,28 @@ extension JSON {
 
 extension JSON {
     public class Decoder: Swift.Decoder {
-        public var codingPath: [CodingKey] {
-            return []
-        }
-        public var userInfo: [CodingUserInfoKey : Any] {
-            return [:]
-        }
+        public var codingPath: [CodingKey] { [] }
+        public var userInfo: [CodingUserInfoKey : Any] { [:] }
 
         let json: JSON.Value
+        let options: Options
 
-        public init(_ json: JSON.Value) throws {
+        public struct Options {
+            public let parseNullAsOptional: Bool
+
+            public static var `default` = Options(parseNullAsOptional: true)
+        }
+
+        public init(_ json: JSON.Value, options: Options = .default) throws
+        {
             self.json = json
+            self.options = options
         }
 
         // NOTE: should be internal, use withScopedDecoder
-        init(_ stream: StreamReader) throws {
+        init(_ stream: StreamReader, options: Options = .default) throws {
             self.json = try JSON.Value(from: stream)
+            self.options = options
         }
 
         // NOTE: should be internal, use withScopedDecoder
@@ -45,7 +52,7 @@ extension JSON {
                 throw DecodingError
                     .typeMismatch([String : JSON.Value].self, nil)
             }
-            let container = JSONKeyedDecodingContainer<Key>(dictionary)
+            let container = JSONKeyedDecodingContainer<Key>(dictionary, options)
             return KeyedDecodingContainer(container)
         }
 
@@ -53,13 +60,13 @@ extension JSON {
             guard case .array(let array) = json else {
                 throw DecodingError.typeMismatch([JSON.Value].self, nil)
             }
-            return JSONUnkeyedDecodingContainer(array)
+            return JSONUnkeyedDecodingContainer(array, options)
         }
 
         public func singleValueContainer() throws
             -> SingleValueDecodingContainer
         {
-            return JSONSingleValueDecodingContainer(json)
+            return JSONSingleValueDecodingContainer(json, options)
         }
     }
 }
