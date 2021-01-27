@@ -5,7 +5,7 @@ Fastest JSON implementation written in Swift.
 ## Package.swift
 
 ```swift
-.package(url: "https://github.com/swift-stack/json.git", .branch("dev"))
+.package(url: "https://github.com/swift-stack/json.git", .branch("fiber"))
 ```
 
 ## Usage
