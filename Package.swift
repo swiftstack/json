@@ -20,21 +20,43 @@ let package = Package(
             dependencies: ["Platform", "Codable", "Stream"],
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
-        .testTarget(
-            name: "JSONTests",
-            dependencies: ["JSON", "Test"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
-        .testTarget(
-            name: "JSONCodableTests",
-            dependencies: ["JSON", "Test"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ])
     ]
 )
+
+// MARK: - tests
+
+testTarget("Codable") { test in
+    test("Decoder")
+    test("Encoder")
+    test("JSON.decode")
+    test("JSON.encode")
+    test("ScopedCoders")
+    test("UnkeyedDecodingContainer")
+    test("UnkeyedEncodingContainer")
+}
+
+testTarget("JSON") { test in
+    test("Value")
+    test("Value+DynamicLookup")
+    test("Value+InputStream")
+    test("Value+OutputStream")
+}
+
+func testTarget(_ target: String, task: ((String) -> Void) -> Void) {
+    task { test in addTest(target: target, name: test) }
+}
+
+func addTest(target: String, name: String) {
+    package.targets.append(
+        .executableTarget(
+            name: "Tests/\(target)/\(name)",
+            dependencies: ["JSON", "Stream", "Test"],
+            path: "Tests/\(target)/\(name)",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]))
+}
 
 // MARK: - custom package source
 

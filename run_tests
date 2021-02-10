@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+swift build
+
+export DYLD_LIBRARY_PATH=/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/lib/swift/macosx
+
+.build/debug/Tests/Codable/Decoder
+.build/debug/Tests/Codable/Encoder
+.build/debug/Tests/Codable/JSON.decode
+.build/debug/Tests/Codable/JSON.encode
+.build/debug/Tests/Codable/ScopedCoders
+.build/debug/Tests/Codable/UnkeyedDecodingContainer
+.build/debug/Tests/Codable/UnkeyedEncodingContainer
+
+.build/debug/Tests/JSON/Value
+.build/debug/Tests/JSON/Value+DynamicLookup
+.build/debug/Tests/JSON/Value+InputStream
+.build/debug/Tests/JSON/Value+OutputStream
