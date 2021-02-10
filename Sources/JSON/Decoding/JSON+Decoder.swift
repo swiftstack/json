@@ -1,20 +1,6 @@
 import Stream
 
 extension JSON {
-    // FIXME: currently pointless, designed for future lazy reading
-    public static func withScopedDecoder<T>(
-        using reader: StreamReader,
-        options: JSON.Decoder.Options = .default,
-        _ body: (Decoder) throws -> T) throws -> T
-    {
-        let decoder = try Decoder(reader, options: options)
-        let result = try body(decoder)
-        try decoder.close()
-        return result
-    }
-}
-
-extension JSON {
     public class Decoder: Swift.Decoder {
         public var codingPath: [CodingKey] { [] }
         public var userInfo: [CodingUserInfoKey : Any] { [:] }
@@ -28,16 +14,15 @@ extension JSON {
             public static var `default` = Options(parseNullAsOptional: true)
         }
 
-        public init(_ json: JSON.Value, options: Options = .default) throws
-        {
+        public init(_ json: JSON.Value, options: Options = .default) throws {
             self.json = json
             self.options = options
         }
 
-        // NOTE: should be internal, use withScopedDecoder
-        init(_ stream: StreamReader, options: Options = .default) throws {
-            self.json = try JSON.Value(from: stream)
-            self.options = options
+        // FIXME: [Concurrency]
+        static func asyncInit(_ stream: InputByteStream, options: Options = .default) async throws -> Decoder {
+            let json = try await JSON.Value.decode(from: stream)
+            return try JSON.Decoder(json, options: options)
         }
 
         // NOTE: should be internal, use withScopedDecoder

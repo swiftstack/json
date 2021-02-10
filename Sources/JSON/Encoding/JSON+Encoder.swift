@@ -2,18 +2,6 @@ import Stream
 import Codable
 
 extension JSON {
-    public static func withScopedEncoder<T>(
-        using writer: StreamWriter,
-        _ body: (Encoder) throws -> T) throws -> T
-    {
-        let encoder = Encoder(writer)
-        let result = try body(encoder)
-        try encoder.close()
-        return result
-    }
-}
-
-extension JSON {
     public class Encoder: Swift.Encoder {
         public var codingPath: [CodingKey] {
             return []
@@ -22,9 +10,11 @@ extension JSON {
             return [:]
         }
 
-        let storage: StreamWriter
+        // FIXME: [Concurrency] should be async StreamWriter
+        let storage: OutputByteStream
 
-        init(_ writer: StreamWriter) {
+        // FIXME: [Concurrency] should be async StreamWriter
+        init(_ writer: OutputByteStream) {
             self.storage = writer
         }
 

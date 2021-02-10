@@ -1,45 +1,45 @@
 import Stream
 
 extension Dictionary where Key == String, Value == JSON.Value {
-    public init(from stream: StreamReader) throws {
-        guard try stream.consume(.curlyBracketOpen) else {
+    public static func decode(from stream: StreamReader) async throws -> Self {
+        guard try await stream.consume(.curlyBracketOpen) else {
             throw JSON.Error.invalidJSON
         }
 
         var result = [String : JSON.Value]()
         loop: while true {
-            try stream.consume(set: .whitespaces)
+            try await stream.consume(set: .whitespaces)
 
-            switch try stream.peek() {
+            switch try await stream.peek() {
             case .curlyBracketClose:
-                try stream.consume(count: 1)
+                try await stream.consume(count: 1)
                 break loop
             case .doubleQuote:
-                let key = try String(from: stream)
-                try stream.consume(set: .whitespaces)
-                guard try stream.consume(.colon) else {
+                let key = try await String.decode(from: stream)
+                try await stream.consume(set: .whitespaces)
+                guard try await stream.consume(.colon) else {
                     throw JSON.Error.invalidJSON
                 }
-                try stream.consume(set: .whitespaces)
-                result[key] = try JSON.Value(from: stream)
+                try await stream.consume(set: .whitespaces)
+                result[key] = try await JSON.Value.decode(from: stream)
             case .comma:
-                try stream.consume(count: 1)
+                try await stream.consume(count: 1)
             default:
                 throw JSON.Error.invalidJSON
             }
         }
-        self = result
+        return result
     }
 
-    public func encode(to stream: StreamWriter) throws {
-        try stream.write(.curlyBracketOpen)
+    public func encode(to stream: StreamWriter) async throws {
+        try await stream.write(.curlyBracketOpen)
         for (key, value) in self {
-            try stream.write(.doubleQuote)
-            try stream.write(key)
-            try stream.write(.doubleQuote)
-            try stream.write(.colon)
-            try value.encode(to: stream)
+            try await stream.write(.doubleQuote)
+            try await stream.write(key)
+            try await stream.write(.doubleQuote)
+            try await stream.write(.colon)
+            try await value.encode(to: stream)
         }
-        try stream.write(.curlyBracketClose)
+        try await stream.write(.curlyBracketClose)
     }
 }

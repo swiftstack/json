@@ -2,20 +2,20 @@ import Stream
 import Platform
 
 extension JSON.Value.Number {
-    public init(from stream: StreamReader) throws {
-        let isNegative = try stream.consume(.hyphen) ? true : false
+    public static func decode(from stream: StreamReader) async throws -> Self {
+        let isNegative = try await stream.consume(.hyphen) ? true : false
         var isInteger = true
 
         var string = [UInt8]()
 
-        try stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
+        try await stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
             string.append(contentsOf: bytes)
         }
 
-        if (try? stream.consume(.dot)) ?? false {
+        if (try? await stream.consume(.dot)) ?? false {
             isInteger = false
             string.append(.dot)
-            try stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
+            try await stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
                 string.append(contentsOf: bytes)
             }
         }
@@ -26,22 +26,22 @@ extension JSON.Value.Number {
         switch isNegative {
         case true:
             switch isInteger {
-            case true: self = .int(-strtol(casted, nil, 10))
-            case false: self = .double(-strtod(casted, nil))
+            case true: return .int(-strtol(casted, nil, 10))
+            case false: return .double(-strtod(casted, nil))
             }
         case false:
             switch isInteger {
-            case true: self = .uint(strtoul(casted, nil, 10))
-            case false: self = .double(strtod(casted, nil))
+            case true: return .uint(strtoul(casted, nil, 10))
+            case false: return .double(strtod(casted, nil))
             }
         }
     }
 
-    public func encode(to stream: StreamWriter) throws {
+    public func encode(to stream: StreamWriter) async throws {
         switch self {
-        case .int(let value): try stream.write(String(value))
-        case .uint(let value): try stream.write(String(value))
-        case .double(let value): try stream.write(String(value))
+        case .int(let value): try await stream.write(String(value))
+        case .uint(let value): try await stream.write(String(value))
+        case .double(let value): try await stream.write(String(value))
         }
     }
 }

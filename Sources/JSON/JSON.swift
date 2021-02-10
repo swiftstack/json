@@ -46,9 +46,9 @@ public struct JSON {
 extension JSON {
     public static func encode<Model: Encodable>(
         _ value: Model,
-        to stream: StreamWriter) throws
+        to stream: StreamWriter) async throws
     {
-        try withScopedEncoder(using: stream) { encoder in
+        try await withScopedEncoder(using: stream) { encoder in
             try value.encode(to: encoder)
         }
     }
@@ -56,9 +56,9 @@ extension JSON {
     public static func decode<Model: Decodable>(
         _ type: Model.Type,
         from stream: StreamReader,
-        options: Decoder.Options = .default) throws -> Model
+        options: Decoder.Options = .default) async throws -> Model
     {
-        return try withScopedDecoder(using: stream, options: options)
+        return try await withScopedDecoder(using: stream, options: options)
         { decoder in
             return try Model(from: decoder)
         }
@@ -70,9 +70,9 @@ extension JSON {
 extension JSON {
     public static func encode(
         encodable value: Encodable,
-        to stream: StreamWriter) throws
+        to stream: StreamWriter) async throws
     {
-        try withScopedEncoder(using: stream) { encoder in
+        try await withScopedEncoder(using: stream) { encoder in
             try value.encode(to: encoder)
         }
     }
@@ -80,9 +80,9 @@ extension JSON {
     public static func decode(
         decodable type: Decodable.Type,
         from stream: StreamReader,
-        options: Decoder.Options = .default) throws -> Decodable
+        options: Decoder.Options = .default) async throws -> Decodable
     {
-        return try withScopedDecoder(using: stream, options: options)
+        return try await withScopedDecoder(using: stream, options: options)
         { decoder in
             return try type.init(from: decoder)
         }
@@ -93,31 +93,39 @@ extension JSON {
 
 extension JSON {
     public static func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
+        // FIXME: [Concurrency]
         let stream = OutputByteStream()
-        try encode(value, to: stream)
+        let encoder = Encoder(stream)
+        try value.encode(to: encoder)
+        try encoder.close()
         return stream.bytes
     }
 
     public static func decode<T: Decodable>(
         _ type: T.Type,
         from json: [UInt8],
-        options: Decoder.Options = .default) throws -> T
+        options: Decoder.Options = .default) async throws -> T
     {
-        return try decode(type, from: InputByteStream(json), options: options)
+        // FIXME: [Concurrency] should be sync
+        return try await decode(type, from: InputByteStream(json), options: options)
     }
 
     public static func encode(encodable value: Encodable) throws -> [UInt8] {
+        // FIXME: [Concurrency]
         let stream = OutputByteStream()
-        try encode(encodable: value, to: stream)
+        let encoder = Encoder(stream)
+        try value.encode(to: encoder)
+        try encoder.close()
         return stream.bytes
     }
 
     public static func decode(
         decodable type: Decodable.Type,
         from json: [UInt8],
-        options: Decoder.Options = .default) throws -> Decodable
+        options: Decoder.Options = .default) async throws -> Decodable
     {
-        return try decode(
+        // FIXME: [Concurrency] should be sync
+        return try await decode(
             decodable: type,
             from: InputByteStream(json),
             options: options)

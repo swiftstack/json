@@ -1,61 +1,61 @@
 import Stream
 
 extension JSON.Value {
-    public init(from stream: StreamReader) throws {
-        try stream.consume(set: .whitespaces)
+    public static func decode(from stream: StreamReader) async throws -> Self {
+        try await stream.consume(set: .whitespaces)
 
-        func consume(_ value: [UInt8]) throws {
-            guard try stream.consume(sequence: value) else {
+        func consume(_ value: [UInt8]) async throws {
+            guard try await stream.consume(sequence: value) else {
                 throw JSON.Error.invalidJSON
             }
         }
 
-        switch try stream.peek() {
+        switch try await stream.peek() {
         case .curlyBracketOpen:
-            self = .object(try [String : JSON.Value](from: stream))
+            return .object(try await [String : JSON.Value].decode(from: stream))
 
         case .squareBracketOpen:
-            self = .array(try [JSON.Value](from: stream))
+            return .array(try await [JSON.Value].decode(from: stream))
 
         case .n:
-            try consume(.null)
-            self = .null
+            try await consume(.null)
+            return .null
 
         case .t:
-            try consume(.true)
-            self = .bool(true)
+            try await consume(.true)
+            return .bool(true)
 
         case .f:
-            try consume(.false)
-            self = .bool(false)
+            try await consume(.false)
+            return .bool(false)
 
         case (.zero)...(.nine), .hyphen:
-            self = .number(try Number(from: stream))
+            return .number(try await Number.decode(from: stream))
 
         case .doubleQuote:
-            self = .string(try String(from: stream))
+            return .string(try await String.decode(from: stream))
 
         default:
             throw JSON.Error.invalidJSON
         }
     }
 
-    public func encode(to stream: StreamWriter) throws {
+    public func encode(to stream: StreamWriter) async throws {
         switch self {
         case .null:
-            try stream.write(.null)
+            try await stream.write(.null)
         case .bool(let value):
-            try stream.write(value ? .true : .false)
+            try await stream.write(value ? .true : .false)
         case .number(let number):
-            try number.encode(to: stream)
+            try await number.encode(to: stream)
         case .string(let string):
-            try stream.write(.doubleQuote)
-            try stream.write(string)
-            try stream.write(.doubleQuote)
+            try await stream.write(.doubleQuote)
+            try await stream.write(string)
+            try await stream.write(.doubleQuote)
         case .array(let values):
-            try values.encode(to: stream)
+            try await values.encode(to: stream)
         case .object(let object):
-            try object.encode(to: stream)
+            try await object.encode(to: stream)
         }
     }
 }
