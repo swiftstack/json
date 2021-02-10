@@ -17,13 +17,22 @@ let package = Package(
     targets: [
         .target(
             name: "JSON",
-            dependencies: ["Platform", "Codable", "Stream"]),
+            dependencies: ["Platform", "Codable", "Stream"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "JSONTests",
-            dependencies: ["JSON", "Test"]),
+            dependencies: ["JSON", "Test"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "JSONCodableTests",
-            dependencies: ["JSON", "Test"])
+            dependencies: ["JSON", "Test"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ])
     ]
 )
 
