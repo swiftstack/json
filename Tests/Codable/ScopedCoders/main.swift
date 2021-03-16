@@ -4,7 +4,7 @@ import Stream
 import JSON
 
 test.case("withScopedEncoder") {
-    try await JSON.withScopedEncoder(using: OutputByteStream()) { encoder in
+    try JSON.withScopedEncoder(using: OutputByteStream()) { encoder in
 
     }
 }

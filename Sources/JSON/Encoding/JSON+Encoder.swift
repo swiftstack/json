@@ -32,8 +32,8 @@ extension JSON {
 
         func openContainer(_ type: ContainerType) throws {
             switch type {
-            case .keyed: try storage.write(.curlyBracketOpen)
-            case .unkeyed: try storage.write(.squareBracketOpen)
+            case .keyed: storage.write(.curlyBracketOpen)
+            case .unkeyed: storage.write(.squareBracketOpen)
             case .single: break
             }
             openedContainers.append(type)
@@ -42,8 +42,8 @@ extension JSON {
         func closeContainer() throws {
             if let type = openedContainers.popLast() {
                 switch type {
-                case .keyed: try storage.write(.curlyBracketClose)
-                case .unkeyed: try storage.write(.squareBracketClose)
+                case .keyed: storage.write(.curlyBracketClose)
+                case .unkeyed: storage.write(.squareBracketClose)
                 case .single: break
                 }
             }
@@ -93,101 +93,101 @@ extension JSON {
 
 extension JSON.Encoder {
     func encodeNil() throws {
-        try storage.write(.null)
+        storage.write(.null)
     }
 
     func encode(_ value: Bool) throws {
-        try storage.write(value ? .true : .false)
+        storage.write(value ? .true : .false)
     }
 
     func encode(_ value: Int) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: Int8) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: Int16) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: Int32) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: Int64) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt8) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt16) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt32) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: UInt64) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: Float) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: Double) throws {
-        try storage.write(String(describing: value))
+        storage.write(String(describing: value))
     }
 
     func encode(_ value: String) throws {
-        try storage.write(.doubleQuote)
+        storage.write(.doubleQuote)
 
         for scalar in value.unicodeScalars {
             switch scalar {
             case "\"":
-                try storage.write(.backslash)
-                try storage.write(.doubleQuote)
+                storage.write(.backslash)
+                storage.write(.doubleQuote)
             case "\\":
-                try storage.write(.backslash)
-                try storage.write(.backslash)
+                storage.write(.backslash)
+                storage.write(.backslash)
             case "\n":
-                try storage.write(.backslash)
-                try storage.write(.n)
+                storage.write(.backslash)
+                storage.write(.n)
             case "\r":
-                try storage.write(.backslash)
-                try storage.write(.r)
+                storage.write(.backslash)
+                storage.write(.r)
             case "\t":
-                try storage.write(.backslash)
-                try storage.write(.t)
+                storage.write(.backslash)
+                storage.write(.t)
             case "\u{8}":
-                try storage.write(.backslash)
-                try storage.write(.b)
+                storage.write(.backslash)
+                storage.write(.b)
             case "\u{c}":
-                try storage.write(.backslash)
-                try storage.write(.f)
+                storage.write(.backslash)
+                storage.write(.f)
             case "\u{0}"..."\u{f}":
-                try storage.write("\\u000")
-                try storage.write(String(scalar.value, radix: 16))
+                storage.write("\\u000")
+                storage.write(String(scalar.value, radix: 16))
             case "\u{10}"..."\u{1f}":
-                try storage.write("\\u00")
-                try storage.write(String(scalar.value, radix: 16))
+                storage.write("\\u00")
+                storage.write(String(scalar.value, radix: 16))
             default:
                 guard let utf8 = UTF8.encode(scalar) else {
                     throw JSON.Error.invalidJSON
                 }
-                try utf8.forEach(storage.write)
+                utf8.forEach(storage.write)
             }
         }
 
-        try storage.write(.doubleQuote)
+        storage.write(.doubleQuote)
     }
 }

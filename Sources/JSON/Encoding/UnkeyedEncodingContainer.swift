@@ -22,7 +22,7 @@ struct JSONUnkeyedEncodingContainer: UnkeyedEncodingContainer {
             hasValues = true
             return
         }
-        try encoder.storage.write(",")
+        encoder.storage.write(",")
     }
 
     var hasNested = false
