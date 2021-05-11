@@ -19,6 +19,7 @@ let package = Package(
             name: "JSON",
             dependencies: ["Platform", "Codable", "Stream"],
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ])
     ]
@@ -54,6 +55,7 @@ func addTest(target: String, name: String) {
             dependencies: ["JSON", "Stream", "Test"],
             path: "Tests/\(target)/\(name)",
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]))
 }
