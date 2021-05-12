@@ -40,7 +40,7 @@ test.case("EsapedString") {
 
 test.case("InvalidEscapedString") {
     let invalidJson = InputByteStream("\"string\r\n\"")
-    expect(throws: JSON.Error.invalidJSON) {
+    await expect(throws: JSON.Error.invalidJSON) {
         try await JSON.Value.decode(from: invalidJson)
     }
 }
