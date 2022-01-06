@@ -17,11 +17,7 @@ let package = Package(
     targets: [
         .target(
             name: "JSON",
-            dependencies: ["Platform", "Codable", "Stream"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ])
+            dependencies: ["Platform", "Codable", "Stream"]),
     ]
 )
 
@@ -53,11 +49,7 @@ func addTest(target: String, name: String) {
         .executableTarget(
             name: "Tests/\(target)/\(name)",
             dependencies: ["JSON", "Stream", "Test"],
-            path: "Tests/\(target)/\(name)",
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]))
+            path: "Tests/\(target)/\(name)"))
 }
 
 // MARK: - custom package source
