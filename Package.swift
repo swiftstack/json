@@ -6,13 +6,13 @@ let package = Package(
     products: [
         .library(
             name: "JSON",
-            targets: ["JSON"])
+            targets: ["JSON"]),
     ],
     dependencies: [
         .package(name: "Platform"),
         .package(name: "Codable"),
         .package(name: "Stream"),
-        .package(name: "Test")
+        .package(name: "Test"),
     ],
     targets: [
         .target(
