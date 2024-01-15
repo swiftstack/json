@@ -24,9 +24,10 @@ extension String {
             let code = try await stream.read(count: 4) { buffer in
                 return Int(hex: buffer)
             }
-            guard let scalar = Unicode.Scalar(code),
-                let encoded = UTF8.encode(scalar) else
-            {
+            guard
+                let scalar = Unicode.Scalar(code),
+                let encoded = UTF8.encode(scalar)
+            else {
                 throw JSON.Error.invalidJSON
             }
 

@@ -69,7 +69,7 @@ test("Object") {
     expect(stream.stringValue == #"{"key":"value"}"#)
 
     stream = OutputByteStream()
-    let nested: JSON.Value = .object(["o":.object(["k":.string("v")])])
+    let nested: JSON.Value = .object(["o": .object(["k": .string("v")])])
     try await nested.encode(to: stream)
     expect(stream.stringValue == #"{"o":{"k":"v"}}"#)
 }

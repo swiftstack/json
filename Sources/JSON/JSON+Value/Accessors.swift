@@ -1,12 +1,12 @@
 extension JSON.Value {
-    public var booleanValue : Bool? {
+    public var booleanValue: Bool? {
         switch self {
         case .bool(let value): return value
         default: return nil
         }
     }
 
-    public var integerValue : Int? {
+    public var integerValue: Int? {
         switch self {
         case .number(.int(let value)): return value
         case .number(.uint(let value)) where value < UInt(Int.max):
@@ -15,7 +15,7 @@ extension JSON.Value {
         }
     }
 
-    public var unsignedValue : UInt? {
+    public var unsignedValue: UInt? {
         switch self {
         case .number(.uint(let value)): return value
         case .number(.int(let value)) where value >= 0: return UInt(value)
@@ -23,7 +23,7 @@ extension JSON.Value {
         }
     }
 
-    public var doubleValue : Double? {
+    public var doubleValue: Double? {
         switch self {
         case .number(.double(let value)): return value
         case .number(.int(let value)): return Double(value)
@@ -32,7 +32,7 @@ extension JSON.Value {
         }
     }
 
-    public var stringValue : String? {
+    public var stringValue: String? {
         switch self {
         case .string(let value): return value
         default: return nil

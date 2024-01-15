@@ -12,7 +12,7 @@ extension JSON.Value {
 
         switch try await stream.peek() {
         case .curlyBracketOpen:
-            return .object(try await [String : JSON.Value].decode(from: stream))
+            return .object(try await [String: JSON.Value].decode(from: stream))
 
         case .squareBracketOpen:
             return .array(try await [JSON.Value].decode(from: stream))
@@ -61,7 +61,7 @@ extension JSON.Value {
 }
 
 extension JSON.Value: Equatable {
-    public static func ==(lhs: JSON.Value, rhs: JSON.Value) -> Bool {
+    public static func == (lhs: JSON.Value, rhs: JSON.Value) -> Bool {
         switch (lhs, rhs) {
         case (.null, .null): return true
         case let (.bool(lhs), .bool(rhs)): return lhs == rhs

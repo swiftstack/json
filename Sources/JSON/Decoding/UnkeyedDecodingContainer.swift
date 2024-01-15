@@ -94,7 +94,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
 
     func decodeIfPresent<T>(
         _ type: T.Type
-    ) throws -> T? where T : Decodable {
+    ) throws -> T? where T: Decodable {
         let decoder = try JSON.Decoder(array[currentIndex], options: options)
         let value = try T(from: decoder)
         currentIndex += 1
@@ -105,7 +105,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
         keyedBy type: NestedKey.Type
     ) throws -> KeyedDecodingContainer<NestedKey> {
         guard case .object(let object) = array[currentIndex] else {
-            throw DecodingError.typeMismatch([String : JSON.Value].self, nil)
+            throw DecodingError.typeMismatch([String: JSON.Value].self, nil)
         }
         currentIndex += 1
         let container = JSONKeyedDecodingContainer<NestedKey>(object, options)
@@ -127,7 +127,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
 
 // FIXME: 😞
 extension JSONUnkeyedDecodingContainer: Swift.Decoder {
-    var userInfo: [CodingUserInfoKey : Any] {
+    var userInfo: [CodingUserInfoKey: Any] {
         return [:]
     }
 

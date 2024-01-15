@@ -3,7 +3,7 @@ import Stream
 extension JSON {
     public class Decoder: Swift.Decoder {
         public var codingPath: [CodingKey] { [] }
-        public var userInfo: [CodingUserInfoKey : Any] { [:] }
+        public var userInfo: [CodingUserInfoKey: Any] { [:] }
 
         let json: JSON.Value
         let options: Options
@@ -20,7 +20,10 @@ extension JSON {
         }
 
         // FIXME: [Concurrency]
-        static func asyncInit(_ stream: InputByteStream, options: Options = .default) async throws -> Decoder {
+        static func asyncInit(
+            _ stream: InputByteStream,
+            options: Options = .default
+        ) async throws -> Decoder {
             let json = try await JSON.Value.decode(from: stream)
             return try JSON.Decoder(json, options: options)
         }
@@ -31,11 +34,11 @@ extension JSON {
         }
 
         public func container<Key>(
-            keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key>
-        {
+            keyedBy type: Key.Type
+        ) throws -> KeyedDecodingContainer<Key> {
             guard case .object(let dictionary) = json else {
                 throw DecodingError
-                    .typeMismatch([String : JSON.Value].self, nil)
+                    .typeMismatch([String: JSON.Value].self, nil)
             }
             let container = JSONKeyedDecodingContainer<Key>(dictionary, options)
             return KeyedDecodingContainer(container)
@@ -48,9 +51,8 @@ extension JSON {
             return JSONUnkeyedDecodingContainer(array, options)
         }
 
-        public func singleValueContainer() throws
-            -> SingleValueDecodingContainer
-        {
+        public func singleValueContainer(
+        ) throws -> SingleValueDecodingContainer {
             return JSONSingleValueDecodingContainer(json, options)
         }
     }

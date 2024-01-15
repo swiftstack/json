@@ -28,7 +28,8 @@ test("Number") {
 }
 
 test("String") {
-    let string = try await JSON.Value.decode(from: InputByteStream("\"string\""))
+    let json = InputByteStream("\"string\"")
+    let string = try await JSON.Value.decode(from: json)
     expect(string == .string("string"))
 }
 
@@ -58,19 +59,21 @@ test("EmptyObject") {
 }
 
 test("SimpleObject") {
-    let simple = try await JSON.Value.decode(from: InputByteStream(#"{"key":"value"}"#))
-    expect(simple == .object(["key" : .string("value")]))
+    let stream = InputByteStream(#"{"key":"value"}"#)
+    let simple = try await JSON.Value.decode(from: stream)
+    expect(simple == .object(["key": .string("value")]))
 }
 
 test("NestedObject") {
-    let nested = try await JSON.Value.decode(from: InputByteStream(#"{"o":{"k":"v"}}"#))
-    expect(nested == .object(["o":.object(["k" : .string("v")])]))
+    let stream = InputByteStream(#"{"o":{"k":"v"}}"#)
+    let nested = try await JSON.Value.decode(from: stream)
+    expect(nested == .object(["o": .object(["k": .string("v")])]))
 }
 
 test("WhitespaceInObject") {
     let whitespace = try await JSON.Value.decode(from: InputByteStream(
         #"{"key" : "value"}"#))
-    expect(whitespace == .object(["key" : .string("value")]))
+    expect(whitespace == .object(["key": .string("value")]))
 }
 
 test("WhitespacBetweenObjects") {
@@ -89,7 +92,8 @@ test("Array") {
     let simple = try await JSON.Value.decode(from: InputByteStream("[1,2]"))
     expect(simple == .array([.number(.uint(1)), .number(.uint(2))]))
 
-    let strings = try await JSON.Value.decode(from: InputByteStream(#"["one", "two"]"#))
+    let strings = try await JSON.Value.decode(from: InputByteStream(
+        #"["one", "two"]"#))
     expect(strings == .array([.string("one"), .string("two")]))
 }
 
