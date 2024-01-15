@@ -3,7 +3,7 @@ import Stream
 
 @testable import JSON
 
-test.case("KeyedContainer") {
+test("KeyedContainer") {
     let expected = """
     {"answer":42}
     """
@@ -18,7 +18,7 @@ test.case("KeyedContainer") {
     expect(output.stringValue == expected)
 }
 
-test.case("UnkeyedContainer") {
+test("UnkeyedContainer") {
     let expected = "[1,[2],[3],4]"
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
@@ -33,7 +33,7 @@ test.case("UnkeyedContainer") {
     expect(output.stringValue == expected)
 }
 
-test.case("SingleValueContainer") {
+test("SingleValueContainer") {
     let expected = "true"
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
@@ -42,4 +42,4 @@ test.case("SingleValueContainer") {
     expect(output.stringValue == expected)
 }
 
-test.run()
+await run()

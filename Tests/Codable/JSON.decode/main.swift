@@ -3,7 +3,7 @@ import Stream
 
 @testable import JSON
 
-test.case("Keyed") {
+test("Keyed") {
     let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
     struct Model: Decodable {
         let answer: Int
@@ -14,7 +14,7 @@ test.case("Keyed") {
     expect(model.hello == "Hello, World!")
 }
 
-test.case("DecodeEscaped") {
+test("DecodeEscaped") {
     let json = InputByteStream("""
         {
             "answer":42,
@@ -30,7 +30,7 @@ test.case("DecodeEscaped") {
     expect(model.hello == "Hello, World!")
 }
 
-test.case("DecodeEscapedUnicode") {
+test("DecodeEscapedUnicode") {
     let json = InputByteStream(
         #"{"hello":"\u3053\u3093\u306b\u3061\u306f"}"#)
     struct Model: Decodable {
@@ -40,7 +40,7 @@ test.case("DecodeEscapedUnicode") {
     expect(model.hello == "こんにちは")
 }
 
-test.case("KeyedNested") {
+test("KeyedNested") {
     let json = InputByteStream(
         #"{"answer":42,"nested":{"hello":"Hello, World!"}}"#)
     struct Model: Decodable {
@@ -55,7 +55,7 @@ test.case("KeyedNested") {
     expect(object.nested.hello == "Hello, World!")
 }
 
-test.case("KeyedNestedInTheMiddle") {
+test("KeyedNestedInTheMiddle") {
     let json = InputByteStream(
         #"{"nested":{"hello":"Hello, World!"},"answer":42}"#)
     struct Model: Decodable {
@@ -70,7 +70,7 @@ test.case("KeyedNestedInTheMiddle") {
     expect(object.answer == 42)
 }
 
-test.case("NestedArrayInTheMiddle") {
+test("NestedArrayInTheMiddle") {
     let json = InputByteStream(
         #"{"nested":{"array":[1,2]},"answer":42}"#)
     struct Model: Decodable {
@@ -85,7 +85,7 @@ test.case("NestedArrayInTheMiddle") {
     expect(object.answer == 42)
 }
 
-test.case("NestedArraysInTheMiddle") {
+test("NestedArraysInTheMiddle") {
     let json = InputByteStream(
         #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#)
     struct Model: Decodable {
@@ -101,20 +101,20 @@ test.case("NestedArraysInTheMiddle") {
     expect(object.answer == 42)
 }
 
-test.case("Unkeyed") {
+test("Unkeyed") {
     let json = InputByteStream("[1,2,3]")
     let object = try await JSON.decode([Int].self, from: json)
     expect(object == [1,2,3])
 }
 
-test.case("UnkeyedOfUnkeyed") {
+test("UnkeyedOfUnkeyed") {
     let json = InputByteStream("[[1,2],[3,4]]")
     let object = try await JSON.decode([[Int]].self, from: json)
     expect(object.first ?? [] == [1,2])
     expect(object.last ?? [] == [3,4])
 }
 
-test.case("Enum") {
+test("Enum") {
     let json = InputByteStream(#"{"single":1,"array":[1,2,3]}"#)
     enum Number: Int, Decodable {
         case one = 1
@@ -130,7 +130,7 @@ test.case("Enum") {
     expect(object.array == [.one, .two, .three])
 }
 
-test.case("Decodable") {
+test("Decodable") {
     let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
     struct Model: Decodable {
         let answer: Int
@@ -146,4 +146,4 @@ test.case("Decodable") {
     expect(object.hello == "Hello, World!")
 }
 
-test.run()
+await run()

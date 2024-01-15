@@ -2,7 +2,7 @@ import Test
 
 @testable import JSON
 
-test.case("Keyed") {
+test("Keyed") {
     let expected = #"{"answer":42,"hello":"Hello, World"}"#
     struct Model: Encodable {
         let answer: Int = 42
@@ -13,7 +13,7 @@ test.case("Keyed") {
     expect(json == expected)
 }
 
-test.case("KeyedNested") {
+test("KeyedNested") {
     let expected = #"{"answer":42,"nested":{"hello":"Hello, World"}}"#
     struct Model: Encodable {
         struct Nested: Encodable {
@@ -27,7 +27,7 @@ test.case("KeyedNested") {
     expect(json == expected)
 }
 
-test.case("KeyedInTheMiddle") {
+test("KeyedInTheMiddle") {
     let expected = #"{"nested":{"hello":"Hello, World"},"answer":42}"#
     struct Model: Encodable {
         struct Nested: Encodable {
@@ -41,7 +41,7 @@ test.case("KeyedInTheMiddle") {
     expect(json == expected)
 }
 
-test.case("NestedInTheMiddle") {
+test("NestedInTheMiddle") {
     let expected = #"{"nested":{"array":[1,2]},"answer":42}"#
     struct Model: Encodable {
         struct Nested: Encodable {
@@ -55,7 +55,7 @@ test.case("NestedInTheMiddle") {
     expect(json == expected)
 }
 
-test.case("NestedArrayInTheMiddle") {
+test("NestedArrayInTheMiddle") {
     let expected = #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#
     struct Model: Encodable {
         struct Nested: Encodable {
@@ -69,19 +69,19 @@ test.case("NestedArrayInTheMiddle") {
     expect(json == expected)
 }
 
-test.case("Unkeyed") {
+test("Unkeyed") {
     let bytes = try JSON.encode([1,2,3])
     let json = String(decoding: bytes, as: UTF8.self)
     expect(json == "[1,2,3]")
 }
 
-test.case("UnkeyedOfUnkeyed") {
+test("UnkeyedOfUnkeyed") {
     let bytes = try JSON.encode([[1,2],[3,4]])
     let json = String(decoding: bytes, as: UTF8.self)
     expect(json == "[[1,2],[3,4]]")
 }
 
-test.case("Enum") {
+test("Enum") {
     let expected = #"{"single":1,"array":[1,2,3]}"#
     enum Number: Int, Encodable {
         case one = 1
@@ -97,7 +97,7 @@ test.case("Enum") {
     expect(json == expected)
 }
 
-test.case("Encodable") {
+test("Encodable") {
     let expected = #"{"answer":42,"hello":"Hello, World"}"#
     struct Model: Encodable {
         let answer: Int = 42
@@ -109,4 +109,4 @@ test.case("Encodable") {
     expect(json == expected)
 }
 
-test.run()
+await run()

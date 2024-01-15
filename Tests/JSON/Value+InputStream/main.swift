@@ -3,12 +3,12 @@ import Stream
 
 @testable import JSON
 
-test.case("Null") {
+test("Null") {
     let null = try await JSON.Value.decode(from: InputByteStream("null"))
     expect(null == .null)
 }
 
-test.case("Bool") {
+test("Bool") {
     let jsonTrue = try await JSON.Value.decode(from: InputByteStream("true"))
     expect(jsonTrue == .bool(true))
 
@@ -16,7 +16,7 @@ test.case("Bool") {
     expect(jsonFalse == .bool(false))
 }
 
-test.case("Number") {
+test("Number") {
     let uint = try await JSON.Value.decode(from: InputByteStream("42"))
     expect(uint == .number(.uint(42)))
 
@@ -27,53 +27,53 @@ test.case("Number") {
     expect(double == .number(.double(-42.42)))
 }
 
-test.case("String") {
+test("String") {
     let string = try await JSON.Value.decode(from: InputByteStream("\"string\""))
     expect(string == .string("string"))
 }
 
-test.case("EsapedString") {
+test("EsapedString") {
     let escapedJson = InputByteStream("\"string\\r\\n\"")
     let escapedString = try await JSON.Value.decode(from: escapedJson)
     expect(escapedString == .string("string\r\n"))
 }
 
-test.case("InvalidEscapedString") {
+test("InvalidEscapedString") {
     let invalidJson = InputByteStream("\"string\r\n\"")
     await expect(throws: JSON.Error.invalidJSON) {
         try await JSON.Value.decode(from: invalidJson)
     }
 }
 
-test.case("EscapedUnicodeString") {
+test("EscapedUnicodeString") {
     let escapedUnicodeJson = InputByteStream(
         #""\u3053\u3093\u306b\u3061\u306f""#)
     let escapedUnicode = try await JSON.Value.decode(from: escapedUnicodeJson)
     expect(escapedUnicode == .string("こんにちは"))
 }
 
-test.case("EmptyObject") {
+test("EmptyObject") {
     let empty = try await JSON.Value.decode(from: InputByteStream("{}"))
     expect(empty == .object([:]))
 }
 
-test.case("SimpleObject") {
+test("SimpleObject") {
     let simple = try await JSON.Value.decode(from: InputByteStream(#"{"key":"value"}"#))
     expect(simple == .object(["key" : .string("value")]))
 }
 
-test.case("NestedObject") {
+test("NestedObject") {
     let nested = try await JSON.Value.decode(from: InputByteStream(#"{"o":{"k":"v"}}"#))
     expect(nested == .object(["o":.object(["k" : .string("v")])]))
 }
 
-test.case("WhitespaceInObject") {
+test("WhitespaceInObject") {
     let whitespace = try await JSON.Value.decode(from: InputByteStream(
         #"{"key" : "value"}"#))
     expect(whitespace == .object(["key" : .string("value")]))
 }
 
-test.case("WhitespacBetweenObjects") {
+test("WhitespacBetweenObjects") {
     let separator = try await JSON.Value.decode(from: InputByteStream(
         #"{"k1":"v1", "k2":"v2"}"#))
     let expected: JSON.Value = .object([
@@ -82,7 +82,7 @@ test.case("WhitespacBetweenObjects") {
     expect(separator == expected)
 }
 
-test.case("Array") {
+test("Array") {
     let empty = try await JSON.Value.decode(from: InputByteStream("[]"))
     expect(empty == .array([]))
 
@@ -93,7 +93,7 @@ test.case("Array") {
     expect(strings == .array([.string("one"), .string("two")]))
 }
 
-test.case("Nested") {
+test("Nested") {
     let objectInArray = try await JSON.Value.decode(from: InputByteStream(
         #"["one", 2, {"key": false}]"#))
     expect(objectInArray == .array([
@@ -107,4 +107,4 @@ test.case("Nested") {
         ["values": .array([.number(.uint(1)), .bool(true)])]))
 }
 
-test.run()
+await run()

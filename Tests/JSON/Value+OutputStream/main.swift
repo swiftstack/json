@@ -3,14 +3,14 @@ import Stream
 
 @testable import JSON
 
-test.case("Null") {
+test("Null") {
     let stream = OutputByteStream()
     let value: JSON.Value = .null
     try await value.encode(to: stream)
     expect(stream.stringValue == "null")
 }
 
-test.case("Bool") {
+test("Bool") {
     var stream = OutputByteStream()
     let jsonTrue: JSON.Value = .bool(true)
     try await jsonTrue.encode(to: stream)
@@ -22,7 +22,7 @@ test.case("Bool") {
     expect(stream.stringValue == "false")
 }
 
-test.case("Number") {
+test("Number") {
     var stream = OutputByteStream()
     let uint: JSON.Value = .number(.uint(42))
     try await uint.encode(to: stream)
@@ -39,7 +39,7 @@ test.case("Number") {
     expect(stream.stringValue == "-42.42")
 }
 
-test.case("String") {
+test("String") {
     var stream = OutputByteStream()
     let string: JSON.Value = .string("string")
     try await string.encode(to: stream)
@@ -57,7 +57,7 @@ test.case("String") {
     expect(stream.stringValue == "\"こんにちは\"")
 }
 
-test.case("Object") {
+test("Object") {
     var stream = OutputByteStream()
     let empty: JSON.Value = .object([:])
     try await empty.encode(to: stream)
@@ -74,7 +74,7 @@ test.case("Object") {
     expect(stream.stringValue == #"{"o":{"k":"v"}}"#)
 }
 
-test.case("Array") {
+test("Array") {
     var stream = OutputByteStream()
     let empty: JSON.Value = .array([])
     try await empty.encode(to: stream)
@@ -91,7 +91,7 @@ test.case("Array") {
     expect(stream.stringValue == #"["one","two"]"#)
 }
 
-test.case("Nested") {
+test("Nested") {
     var stream = OutputByteStream()
     let objectInArray: JSON.Value = .array([
         .string("one"),
@@ -107,4 +107,4 @@ test.case("Nested") {
     expect(stream.stringValue == #"{"values":[1,true]}"#)
 }
 
-test.run()
+await run()

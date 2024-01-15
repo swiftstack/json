@@ -3,7 +3,7 @@ import Stream
 
 @testable import JSON
 
-test.case("Container") {
+test("Container") {
     let decoder = try await JSON.Decoder.asyncInit(InputByteStream("[1,2]"))
     var unkeyedContainer = try decoder.unkeyedContainer()
     expect(unkeyedContainer.count == 2)
@@ -16,7 +16,7 @@ test.case("Container") {
     expect(int2 == 2)
 }
 
-test.case("NestedContainer") {
+test("NestedContainer") {
     let decoder = try await JSON.Decoder.asyncInit(InputByteStream("[[1],[2]]"))
     var unkeyedContainer = try decoder.unkeyedContainer()
     expect(unkeyedContainer.count == 2)
@@ -39,4 +39,4 @@ test.case("NestedContainer") {
     expect(unkeyedContainer.isAtEnd == true)
 }
 
-test.run()
+await run()
