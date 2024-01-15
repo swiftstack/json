@@ -19,15 +19,6 @@ extension JSON {
             self.options = options
         }
 
-        // FIXME: [Concurrency]
-        static func asyncInit(
-            _ stream: InputByteStream,
-            options: Options = .default
-        ) async throws -> Decoder {
-            let json = try await JSON.Value.decode(from: stream)
-            return try JSON.Decoder(json, options: options)
-        }
-
         // NOTE: should be internal, use withScopedDecoder
         func close() throws {
             // consume the rest of stream
@@ -55,5 +46,16 @@ extension JSON {
         ) throws -> SingleValueDecodingContainer {
             return JSONSingleValueDecodingContainer(json, options)
         }
+    }
+}
+
+// testable
+extension JSON.Decoder {
+    convenience init(
+        _ stream: InputByteStream,
+        options: Options = .default
+    ) async throws {
+        let value = try await JSON.Value.decode(from: stream)
+        try self.init(value, options: options)
     }
 }

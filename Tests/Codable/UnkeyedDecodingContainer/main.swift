@@ -4,7 +4,7 @@ import Stream
 @testable import JSON
 
 test("Container") {
-    let decoder = try await JSON.Decoder.asyncInit(InputByteStream("[1,2]"))
+    let decoder = try await JSON.Decoder(InputByteStream("[1,2]"))
     var unkeyedContainer = try decoder.unkeyedContainer()
     expect(unkeyedContainer.count == 2)
     expect(unkeyedContainer.isAtEnd == false)
@@ -17,7 +17,7 @@ test("Container") {
 }
 
 test("NestedContainer") {
-    let decoder = try await JSON.Decoder.asyncInit(InputByteStream("[[1],[2]]"))
+    let decoder = try await JSON.Decoder(InputByteStream("[[1],[2]]"))
     var unkeyedContainer = try decoder.unkeyedContainer()
     expect(unkeyedContainer.count == 2)
     expect(unkeyedContainer.isAtEnd == false)
