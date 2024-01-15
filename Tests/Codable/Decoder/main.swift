@@ -7,7 +7,7 @@ test("KeyedContainer") {
     let stream = InputByteStream("""
         {"answer":42}
         """)
-    let decoder = try await JSON.Decoder.asyncInit(stream)
+    let decoder = try await JSON.Decoder(stream)
     enum Keys: CodingKey {
         case answer
     }
@@ -18,7 +18,7 @@ test("KeyedContainer") {
 
 test("UnkeyedContainer") {
     let stream = InputByteStream("[1,[2],[3],4]")
-    let decoder = try await JSON.Decoder.asyncInit(stream)
+    let decoder = try await JSON.Decoder(stream)
     var container = try decoder.unkeyedContainer()
     let int1 = try container.decode(Int.self)
     var nested1 = try container.nestedUnkeyedContainer()
@@ -34,7 +34,7 @@ test("UnkeyedContainer") {
 
 test("SingleValueContainer") {
     let stream = InputByteStream("true")
-    let decoder = try await JSON.Decoder.asyncInit(stream)
+    let decoder = try await JSON.Decoder(stream)
     let container = try decoder.singleValueContainer()
     let bool = try container.decode(Bool.self)
     expect(bool == true)
