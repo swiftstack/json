@@ -4,8 +4,8 @@ import PackageDescription
 let package = Package(
     name: "JSON",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15),
+        .iOS(.v16),
+        .macOS(.v13),
     ],
     products: [
         .library(
