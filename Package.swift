@@ -25,7 +25,8 @@ let package = Package(
                 .product(name: "Platform", package: "platform"),
                 .product(name: "Codable", package: "codable"),
                 .product(name: "Stream", package: "stream"),
-            ]),
+            ],
+            swiftSettings: swift6),
     ]
 )
 
@@ -61,8 +62,18 @@ func addTest(target: String, name: String) {
                 .product(name: "Stream", package: "stream"),
                 .product(name: "Test", package: "test"),
             ],
-            path: "Tests/\(target)/\(name)"))
+            path: "Tests/\(target)/\(name)",
+            swiftSettings: swift6))
 }
+
+let swift6: [SwiftSetting] = [
+    .enableUpcomingFeature("ConciseMagicFile"),
+    .enableUpcomingFeature("ForwardTrailingClosures"),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("StrictConcurrency"),
+    .enableUpcomingFeature("ImplicitOpenExistentials"),
+    .enableUpcomingFeature("BareSlashRegexLiterals"),
+]
 
 // MARK: - custom package source
 
