@@ -71,7 +71,7 @@ struct JSONSingleValueEncodingContainer: SingleValueEncodingContainer {
         try encoder.encode(value)
     }
 
-    mutating func encode<T>(_ value: T) throws where T : Encodable {
+    mutating func encode<T>(_ value: T) throws where T: Encodable {
         try value.encode(to: encoder)
     }
 }

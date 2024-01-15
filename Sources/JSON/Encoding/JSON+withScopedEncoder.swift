@@ -16,8 +16,8 @@ extension JSON {
 
     public static func withScopedEncoder<T>(
         using stream: OutputByteStream,
-        _ body: (Encoder) throws -> T) throws -> T
-    {
+        _ body: (Encoder) throws -> T
+    ) throws -> T {
         let encoder = Encoder(stream)
         let result = try body(encoder)
         try encoder.close()

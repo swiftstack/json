@@ -138,7 +138,7 @@ struct JSONUnkeyedEncodingContainer: UnkeyedEncodingContainer {
         count += 1
     }
 
-    mutating func encode<T>(_ value: T) throws where T : Encodable {
+    mutating func encode<T>(_ value: T) throws where T: Encodable {
         try closeNestedIfNeeded()
         try writeCommaIfNeeded()
         hasNested = true

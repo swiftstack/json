@@ -8,7 +8,7 @@ public struct JSON {
         case number(Number)
         case string(String)
         case array([JSON.Value])
-        case object([String : JSON.Value])
+        case object([String: JSON.Value])
 
         public enum Number {
             case int(Int)
@@ -31,7 +31,7 @@ public struct JSON {
                 default:
                     switch newValue {
                     case .some(let value):
-                        self = .object([member : value])
+                        self = .object([member: value])
                     case .none:
                         self = .object([:])
                     }
@@ -46,8 +46,8 @@ public struct JSON {
 extension JSON {
     public static func encode<Model: Encodable>(
         _ value: Model,
-        to stream: StreamWriter) async throws
-    {
+        to stream: StreamWriter
+    ) async throws {
         try await withScopedEncoder(using: stream) { encoder in
             try value.encode(to: encoder)
         }
@@ -56,11 +56,13 @@ extension JSON {
     public static func decode<Model: Decodable>(
         _ type: Model.Type,
         from stream: StreamReader,
-        options: Decoder.Options = .default) async throws -> Model
-    {
-        return try await withScopedDecoder(using: stream, options: options)
-        { decoder in
-            return try Model(from: decoder)
+        options: Decoder.Options = .default
+    ) async throws -> Model {
+        try await withScopedDecoder(
+            using: stream,
+            options: options
+        ) { decoder in
+            try Model(from: decoder)
         }
     }
 }
@@ -70,8 +72,8 @@ extension JSON {
 extension JSON {
     public static func encode(
         encodable value: Encodable,
-        to stream: StreamWriter) async throws
-    {
+        to stream: StreamWriter
+    ) async throws {
         try await withScopedEncoder(using: stream) { encoder in
             try value.encode(to: encoder)
         }
@@ -80,11 +82,13 @@ extension JSON {
     public static func decode(
         decodable type: Decodable.Type,
         from stream: StreamReader,
-        options: Decoder.Options = .default) async throws -> Decodable
-    {
-        return try await withScopedDecoder(using: stream, options: options)
-        { decoder in
-            return try type.init(from: decoder)
+        options: Decoder.Options = .default
+    ) async throws -> Decodable {
+        try await withScopedDecoder(
+            using: stream,
+            options: options
+        ) { decoder in
+            try type.init(from: decoder)
         }
     }
 }
@@ -104,10 +108,10 @@ extension JSON {
     public static func decode<T: Decodable>(
         _ type: T.Type,
         from json: [UInt8],
-        options: Decoder.Options = .default) async throws -> T
-    {
+        options: Decoder.Options = .default
+    ) async throws -> T {
         // FIXME: [Concurrency] should be sync
-        return try await decode(type, from: InputByteStream(json), options: options)
+        try await decode(type, from: InputByteStream(json), options: options)
     }
 
     public static func encode(encodable value: Encodable) throws -> [UInt8] {
@@ -122,11 +126,10 @@ extension JSON {
     public static func decode(
         decodable type: Decodable.Type,
         from json: [UInt8],
-        options: Decoder.Options = .default) async throws -> Decodable
-    {
+        options: Decoder.Options = .default
+    ) async throws -> Decodable {
         // FIXME: [Concurrency] should be sync
-        return try await decode(
-            decodable: type,
+        try await decode(decodable: type,
             from: InputByteStream(json),
             options: options)
     }

@@ -8,14 +8,14 @@ extension JSON.Value.Number {
 
         var string = [UInt8]()
 
-        try await stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
+        try await stream.read(while: isDigit) { bytes in
             string.append(contentsOf: bytes)
         }
 
         if (try? await stream.consume(.dot)) ?? false {
             isInteger = false
             string.append(.dot)
-            try await stream.read(while: { $0 >= .zero && $0 <= .nine }) { bytes in
+            try await stream.read(while: isDigit) { bytes in
                 string.append(contentsOf: bytes)
             }
         }
@@ -44,13 +44,17 @@ extension JSON.Value.Number {
         case .double(let value): try await stream.write(String(value))
         }
     }
+
+    private static func isDigit(_ byte: UInt8) -> Bool {
+        byte >= .zero && byte <= .nine
+    }
 }
 
 extension JSON.Value.Number: Equatable {
-    public static func ==(
+    public static func == (
         lhs: JSON.Value.Number,
-        rhs: JSON.Value.Number) -> Bool
-    {
+        rhs: JSON.Value.Number
+    ) -> Bool {
         switch (lhs, rhs) {
         case let (.int(lhs), .int(rhs)): return lhs == rhs
         case let (.uint(lhs), .uint(rhs)): return lhs == rhs

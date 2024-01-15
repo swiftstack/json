@@ -4,15 +4,12 @@ import Stream
 import JSON
 
 test("withScopedEncoder") {
-    try JSON.withScopedEncoder(using: OutputByteStream()) { encoder in
-
+    try JSON.withScopedEncoder(using: OutputByteStream()) { _ in
     }
 }
 
 test("withScopedDecoder") {
-    try await JSON.withScopedDecoder(using: InputByteStream("null"))
-    { decoder in
-
+    try await JSON.withScopedDecoder(using: InputByteStream("null")) { _ in
     }
 }
 

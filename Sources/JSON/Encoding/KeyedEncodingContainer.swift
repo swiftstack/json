@@ -1,7 +1,7 @@
 import Stream
 import Codable
 
-struct JSONKeyedEncodingContainer<K : CodingKey>
+struct JSONKeyedEncodingContainer<K: CodingKey>
 : KeyedEncodingContainerProtocol {
     typealias Key = K
 
@@ -148,7 +148,7 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
 
     mutating func encode<T>(
         _ value: T, forKey key: K
-    ) throws where T : Encodable {
+    ) throws where T: Encodable {
         try closeNestedIfNeeded()
         try writeCommaIfNeeded()
         try writeKey(key.stringValue)
@@ -158,8 +158,8 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
 
     mutating func nestedContainer<NestedKey>(
         keyedBy keyType: NestedKey.Type,
-        forKey key: K) -> KeyedEncodingContainer<NestedKey>
-    {
+        forKey key: K
+    ) -> KeyedEncodingContainer<NestedKey> {
         do {
             try closeNestedIfNeeded()
             try writeCommaIfNeeded()
@@ -171,8 +171,8 @@ struct JSONKeyedEncodingContainer<K : CodingKey>
     }
 
     mutating func nestedUnkeyedContainer(
-        forKey key: K) -> UnkeyedEncodingContainer
-    {
+        forKey key: K
+    ) -> UnkeyedEncodingContainer {
         do {
             try closeNestedIfNeeded()
             try writeCommaIfNeeded()

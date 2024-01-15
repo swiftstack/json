@@ -81,7 +81,7 @@ test("NestedArrayInTheMiddle") {
         let answer: Int
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.nested.array == [1,2])
+    expect(object.nested.array == [1, 2])
     expect(object.answer == 42)
 }
 
@@ -96,22 +96,22 @@ test("NestedArraysInTheMiddle") {
         let answer: Int
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.nested.array.first ?? [] == [1,2])
-    expect(object.nested.array.last ?? [] == [3,4])
+    expect(object.nested.array.first ?? [] == [1, 2])
+    expect(object.nested.array.last ?? [] == [3, 4])
     expect(object.answer == 42)
 }
 
 test("Unkeyed") {
     let json = InputByteStream("[1,2,3]")
     let object = try await JSON.decode([Int].self, from: json)
-    expect(object == [1,2,3])
+    expect(object == [1, 2, 3])
 }
 
 test("UnkeyedOfUnkeyed") {
     let json = InputByteStream("[[1,2],[3,4]]")
     let object = try await JSON.decode([[Int]].self, from: json)
-    expect(object.first ?? [] == [1,2])
-    expect(object.last ?? [] == [3,4])
+    expect(object.first ?? [] == [1, 2])
+    expect(object.last ?? [] == [3, 4])
 }
 
 test("Enum") {

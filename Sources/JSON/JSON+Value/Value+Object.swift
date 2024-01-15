@@ -6,7 +6,7 @@ extension Dictionary where Key == String, Value == JSON.Value {
             throw JSON.Error.invalidJSON
         }
 
-        var result = [String : JSON.Value]()
+        var result = [String: JSON.Value]()
         loop: while true {
             try await stream.consume(set: .whitespaces)
 

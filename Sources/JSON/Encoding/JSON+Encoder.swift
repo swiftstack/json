@@ -6,7 +6,7 @@ extension JSON {
         public var codingPath: [CodingKey] {
             return []
         }
-        public var userInfo: [CodingUserInfoKey : Any] {
+        public var userInfo: [CodingUserInfoKey: Any] {
             return [:]
         }
 
@@ -60,8 +60,8 @@ extension JSON {
         }
 
         public func container<Key>(
-            keyedBy type: Key.Type) -> KeyedEncodingContainer<Key>
-        {
+            keyedBy type: Key.Type
+        ) -> KeyedEncodingContainer<Key> {
             do {
                 try openContainer(.keyed)
                 let container = JSONKeyedEncodingContainer<Key>(self)

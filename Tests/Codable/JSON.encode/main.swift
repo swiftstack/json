@@ -45,7 +45,7 @@ test("NestedInTheMiddle") {
     let expected = #"{"nested":{"array":[1,2]},"answer":42}"#
     struct Model: Encodable {
         struct Nested: Encodable {
-            let array: [Int] = [1,2]
+            let array: [Int] = [1, 2]
         }
         let nested = Nested()
         let answer: Int = 42
@@ -59,7 +59,7 @@ test("NestedArrayInTheMiddle") {
     let expected = #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#
     struct Model: Encodable {
         struct Nested: Encodable {
-            let array: [[Int]] = [[1,2],[3,4]]
+            let array: [[Int]] = [[1, 2], [3, 4]]
         }
         let nested = Nested()
         let answer: Int = 42
@@ -70,13 +70,13 @@ test("NestedArrayInTheMiddle") {
 }
 
 test("Unkeyed") {
-    let bytes = try JSON.encode([1,2,3])
+    let bytes = try JSON.encode([1, 2, 3])
     let json = String(decoding: bytes, as: UTF8.self)
     expect(json == "[1,2,3]")
 }
 
 test("UnkeyedOfUnkeyed") {
-    let bytes = try JSON.encode([[1,2],[3,4]])
+    let bytes = try JSON.encode([[1, 2], [3, 4]])
     let json = String(decoding: bytes, as: UTF8.self)
     expect(json == "[[1,2],[3,4]]")
 }
