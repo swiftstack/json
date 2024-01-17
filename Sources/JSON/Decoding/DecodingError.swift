@@ -18,14 +18,12 @@ extension DecodingError.Context {
     }
 }
 
-extension DecodingError.Context: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self.init(codingPath: [], debugDescription: value)
+extension DecodingError {
+    static func keyNotFound(_ key: any CodingKey) -> Self {
+        .keyNotFound(key, .init(codingPath: [], debugDescription: ""))
     }
-}
 
-extension DecodingError.Context: ExpressibleByNilLiteral {
-    public init(nilLiteral: ()) {
-        self.init(codingPath: [], debugDescription: "")
+    static func typeMismatch(_ key: any Any.Type) -> Self {
+        .typeMismatch(key, .init(codingPath: [], debugDescription: ""))
     }
 }

@@ -44,7 +44,7 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
         _ type: T.Type, forKey key: K
     ) throws -> T {
         guard let object = object[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, nil)
+            throw DecodingError.keyNotFound(key)
         }
 
         guard let value = T(object) else {
@@ -57,7 +57,7 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
 
     func decodeNil(forKey key: K) throws -> Bool {
         guard let object = object[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, nil)
+            throw DecodingError.keyNotFound(key)
         }
         return object == .null
     }
@@ -123,7 +123,7 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
         forKey key: K
     ) throws -> T where T: Decodable {
         guard let value = object[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, nil)
+            throw DecodingError.keyNotFound(key)
         }
         let decoder = try JSON.Decoder(value, options: options)
         return try T(from: decoder)
@@ -204,10 +204,10 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
         forKey key: K
     ) throws -> KeyedDecodingContainer<NestedKey> {
         guard let nested = object[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, nil)
+            throw DecodingError.keyNotFound(key)
         }
         guard case .object(let object) = nested else {
-            throw DecodingError.typeMismatch([String: JSON.Value].self, nil)
+            throw DecodingError.typeMismatch([String: JSON.Value].self)
         }
         let container = JSONKeyedDecodingContainer<NestedKey>(object, options)
         return KeyedDecodingContainer(container)
@@ -217,10 +217,10 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
         forKey key: K
     ) throws -> UnkeyedDecodingContainer {
         guard let nested = object[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, nil)
+            throw DecodingError.keyNotFound(key)
         }
         guard case .array(let array) = nested else {
-            throw DecodingError.typeMismatch([JSON.Value].self, nil)
+            throw DecodingError.typeMismatch([JSON.Value].self)
         }
         return JSONUnkeyedDecodingContainer(array, options)
     }
@@ -231,7 +231,7 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
 
     func superDecoder(forKey key: K) throws -> Swift.Decoder {
         guard let nested = object[key.stringValue] else {
-            throw DecodingError.keyNotFound(key, nil)
+            throw DecodingError.keyNotFound(key)
         }
         return try JSON.Decoder(nested, options: options)
     }

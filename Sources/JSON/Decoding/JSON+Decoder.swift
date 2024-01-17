@@ -28,8 +28,7 @@ extension JSON {
             keyedBy type: Key.Type
         ) throws -> KeyedDecodingContainer<Key> {
             guard case .object(let dictionary) = json else {
-                throw DecodingError
-                    .typeMismatch([String: JSON.Value].self, nil)
+                throw DecodingError.typeMismatch([String: JSON.Value].self)
             }
             let container = JSONKeyedDecodingContainer<Key>(dictionary, options)
             return KeyedDecodingContainer(container)
@@ -37,7 +36,7 @@ extension JSON {
 
         public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
             guard case .array(let array) = json else {
-                throw DecodingError.typeMismatch([JSON.Value].self, nil)
+                throw DecodingError.typeMismatch([JSON.Value].self)
             }
             return JSONUnkeyedDecodingContainer(array, options)
         }
