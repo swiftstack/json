@@ -1,16 +1,16 @@
-import Test
+import Testing
 import Stream
 // don't use @testable
 import JSON
 
-test("withScopedEncoder") {
+@Test("withScopedEncoder")
+func withScopedEncoder() async throws {
     try JSON.withScopedEncoder(using: OutputByteStream()) { _ in
     }
 }
 
-test("withScopedDecoder") {
+@Test("withScopedDecoder")
+func withScopedDecoder() async throws {
     try await JSON.withScopedDecoder(using: InputByteStream("null")) { _ in
     }
 }
-
-await run()

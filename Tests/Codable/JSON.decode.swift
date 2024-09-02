@@ -1,20 +1,22 @@
-import Test
+import Testing
 import Stream
 
 @testable import JSON
 
-test("Keyed") {
+@Test("JSON.decode keyed")
+func decodeKeyed() async throws {
     let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
     struct Model: Decodable {
         let answer: Int
         let hello: String
     }
     let model = try await JSON.decode(Model.self, from: json)
-    expect(model.answer == 42)
-    expect(model.hello == "Hello, World!")
+    #expect(model.answer == 42)
+    #expect(model.hello == "Hello, World!")
 }
 
-test("DecodeEscaped") {
+@Test("JSON.decode formatted")
+func decodeEscaped() async throws {
     let json = InputByteStream("""
         {
             "answer":42,
@@ -26,21 +28,23 @@ test("DecodeEscaped") {
         let hello: String
     }
     let model = try await JSON.decode(Model.self, from: json)
-    expect(model.answer == 42)
-    expect(model.hello == "Hello, World!")
+    #expect(model.answer == 42)
+    #expect(model.hello == "Hello, World!")
 }
 
-test("DecodeEscapedUnicode") {
+@Test("JSON.decode escaped unicode")
+func decodeEscapedUnicode() async throws {
     let json = InputByteStream(
         #"{"hello":"\u3053\u3093\u306b\u3061\u306f"}"#)
     struct Model: Decodable {
         let hello: String
     }
     let model = try await JSON.decode(Model.self, from: json)
-    expect(model.hello == "こんにちは")
+    #expect(model.hello == "こんにちは")
 }
 
-test("KeyedNested") {
+@Test("JSON.decode nested keyed")
+func decodeKeyedNested() async throws {
     let json = InputByteStream(
         #"{"answer":42,"nested":{"hello":"Hello, World!"}}"#)
     struct Model: Decodable {
@@ -51,11 +55,12 @@ test("KeyedNested") {
         let nested: Nested
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.answer == 42)
-    expect(object.nested.hello == "Hello, World!")
+    #expect(object.answer == 42)
+    #expect(object.nested.hello == "Hello, World!")
 }
 
-test("KeyedNestedInTheMiddle") {
+@Test("JSON.decode nested keyed in the middle")
+func decodeKeyedNestedInTheMiddle() async throws {
     let json = InputByteStream(
         #"{"nested":{"hello":"Hello, World!"},"answer":42}"#)
     struct Model: Decodable {
@@ -66,11 +71,12 @@ test("KeyedNestedInTheMiddle") {
         let answer: Int
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.nested.hello == "Hello, World!")
-    expect(object.answer == 42)
+    #expect(object.nested.hello == "Hello, World!")
+    #expect(object.answer == 42)
 }
 
-test("NestedArrayInTheMiddle") {
+@Test("JSON.decode nested array in the middle")
+func decodeNestedArrayInTheMiddle() async throws {
     let json = InputByteStream(
         #"{"nested":{"array":[1,2]},"answer":42}"#)
     struct Model: Decodable {
@@ -81,11 +87,12 @@ test("NestedArrayInTheMiddle") {
         let answer: Int
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.nested.array == [1, 2])
-    expect(object.answer == 42)
+    #expect(object.nested.array == [1, 2])
+    #expect(object.answer == 42)
 }
 
-test("NestedArraysInTheMiddle") {
+@Test("JSON.decode nested arrays in the middle")
+func decodeNestedArraysInTheMiddle() async throws {
     let json = InputByteStream(
         #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#)
     struct Model: Decodable {
@@ -96,25 +103,28 @@ test("NestedArraysInTheMiddle") {
         let answer: Int
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.nested.array.first ?? [] == [1, 2])
-    expect(object.nested.array.last ?? [] == [3, 4])
-    expect(object.answer == 42)
+    #expect(object.nested.array.first ?? [] == [1, 2])
+    #expect(object.nested.array.last ?? [] == [3, 4])
+    #expect(object.answer == 42)
 }
 
-test("Unkeyed") {
+@Test("JSON.decode unkeyed")
+func decodeUnkeyed() async throws {
     let json = InputByteStream("[1,2,3]")
     let object = try await JSON.decode([Int].self, from: json)
-    expect(object == [1, 2, 3])
+    #expect(object == [1, 2, 3])
 }
 
-test("UnkeyedOfUnkeyed") {
+@Test("Decode unkeyed of unkeyed")
+func decodeUnkeyedOfUnkeyed() async throws {
     let json = InputByteStream("[[1,2],[3,4]]")
     let object = try await JSON.decode([[Int]].self, from: json)
-    expect(object.first ?? [] == [1, 2])
-    expect(object.last ?? [] == [3, 4])
+    #expect(object.first ?? [] == [1, 2])
+    #expect(object.last ?? [] == [3, 4])
 }
 
-test("Enum") {
+@Test("Decode enum")
+func decodeEnum() async throws {
     let json = InputByteStream(#"{"single":1,"array":[1,2,3]}"#)
     enum Number: Int, Decodable {
         case one = 1
@@ -126,11 +136,12 @@ test("Enum") {
         let array: [Number]
     }
     let object = try await JSON.decode(Model.self, from: json)
-    expect(object.single == .one)
-    expect(object.array == [.one, .two, .three])
+    #expect(object.single == .one)
+    #expect(object.array == [.one, .two, .three])
 }
 
-test("Decodable") {
+@Test("Decode Decodable")
+func decodeDecodable() async throws {
     let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
     struct Model: Decodable {
         let answer: Int
@@ -138,12 +149,7 @@ test("Decodable") {
     }
     let type: Decodable.Type = Model.self
     let decodable = try await JSON.decode(decodable: type, from: json)
-    guard let object = decodable as? Model else {
-        fail()
-        return
-    }
-    expect(object.answer == 42)
-    expect(object.hello == "Hello, World!")
+    let object = try #require(decodable as? Model)
+    #expect(object.answer == 42)
+    #expect(object.hello == "Hello, World!")
 }
-
-await run()

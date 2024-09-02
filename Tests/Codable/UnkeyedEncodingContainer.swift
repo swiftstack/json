@@ -1,19 +1,21 @@
-import Test
+import Testing
 import Stream
 
 @testable import JSON
 
-test("Container") {
+@Test("UnkeyedEncodingContainer")
+func unkeyedEncodingContainer() async throws {
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
     var unkeyedContainer = encoder.unkeyedContainer()
     try unkeyedContainer.encode(1)
     try unkeyedContainer.encode(2)
     try encoder.close()
-    expect(output.stringValue == "[1,2]")
+    #expect(output.stringValue == "[1,2]")
 }
 
-test("NestedContainer") {
+@Test("UnkeyedEncodingContainer.nestedUnkeyedContainer()")
+func nestedUnkeyedEncodingContainer() async throws {
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
     var unkeyedContainer = encoder.unkeyedContainer()
@@ -22,17 +24,16 @@ test("NestedContainer") {
     var nested2 = unkeyedContainer.nestedUnkeyedContainer()
     try nested2.encode(2)
     try encoder.close()
-    expect(output.stringValue == "[[1],[2]]")
+    #expect(output.stringValue == "[[1],[2]]")
 }
 
-test("Null") {
+@Test("UnkeyedEncodingContainer.encodeNil()")
+func nestedUnkeyedEncodingContainerEncodeNil() async throws {
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
     var unkeyedContainer = encoder.unkeyedContainer()
     try unkeyedContainer.encodeNil()
     try unkeyedContainer.encodeNil()
     try encoder.close()
-    expect(output.stringValue == "[null,null]")
+    #expect(output.stringValue == "[null,null]")
 }
-
-await run()

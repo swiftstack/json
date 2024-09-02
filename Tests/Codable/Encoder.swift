@@ -1,9 +1,10 @@
-import Test
+import Testing
 import Stream
 
 @testable import JSON
 
-test("KeyedContainer") {
+@Test("Encoder KeyedContainer")
+func encoderKeyedContainer() async throws {
     let expected = """
     {"answer":42}
     """
@@ -15,10 +16,11 @@ test("KeyedContainer") {
     var container = encoder.container(keyedBy: Keys.self)
     try container.encode(42, forKey: .answer)
     try encoder.close()
-    expect(output.stringValue == expected)
+    #expect(output.stringValue == expected)
 }
 
-test("UnkeyedContainer") {
+@Test("Encoder UnkeyedContainer")
+func encoderUnkeyedContainer() async throws {
     let expected = "[1,[2],[3],4]"
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
@@ -30,16 +32,15 @@ test("UnkeyedContainer") {
     try nested2.encode(3)
     try container.encode(4)
     try encoder.close()
-    expect(output.stringValue == expected)
+    #expect(output.stringValue == expected)
 }
 
-test("SingleValueContainer") {
+@Test("Encoder SingleValueContainer")
+func encoderSingleValueContainer() async throws {
     let expected = "true"
     let output = OutputByteStream()
     let encoder = JSON.Encoder(output)
     var container = encoder.singleValueContainer()
     try container.encode(true)
-    expect(output.stringValue == expected)
+    #expect(output.stringValue == expected)
 }
-
-await run()

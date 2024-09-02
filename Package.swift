@@ -13,10 +13,15 @@ let package = Package(
             targets: ["JSON"]),
     ],
     dependencies: [
-        .package(name: "Platform"),
-        .package(name: "Codable"),
-        .package(name: "Stream"),
-        .package(name: "Test"),
+        .package(
+            name: "Platform"),
+        .package(
+            name: "Codable"),
+        .package(
+            name: "Stream"),
+        .package(
+            url: "https://github.com/apple/swift-testing.git",
+            from: "0.12.0"),
     ],
     targets: [
         .target(
@@ -27,44 +32,15 @@ let package = Package(
                 .product(name: "Stream", package: "stream"),
             ],
             swiftSettings: swift6),
-    ]
-)
-
-// MARK: - tests
-
-testTarget("Codable") { test in
-    test("Decoder")
-    test("Encoder")
-    test("JSON.decode")
-    test("JSON.encode")
-    test("ScopedCoders")
-    test("UnkeyedDecodingContainer")
-    test("UnkeyedEncodingContainer")
-}
-
-testTarget("JSON") { test in
-    test("Value")
-    test("Value+DynamicLookup")
-    test("Value+InputStream")
-    test("Value+OutputStream")
-}
-
-func testTarget(_ target: String, task: ((String) -> Void) -> Void) {
-    task { test in addTest(target: target, name: test) }
-}
-
-func addTest(target: String, name: String) {
-    package.targets.append(
-        .executableTarget(
-            name: "Tests/\(target)/\(name)",
+        .testTarget(
+            name: "Tests",
             dependencies: [
                 .target(name: "JSON"),
                 .product(name: "Stream", package: "stream"),
-                .product(name: "Test", package: "test"),
-            ],
-            path: "Tests/\(target)/\(name)",
-            swiftSettings: swift6))
-}
+                .product(name: "Testing", package: "swift-testing"),
+            ]),
+    ]
+)
 
 let swift6: [SwiftSetting] = [
     .enableUpcomingFeature("ConciseMagicFile"),

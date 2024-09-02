@@ -1,9 +1,10 @@
-import Test
+import Testing
 import Stream
 
 @testable import JSON
 
-test("KeyedContainer") {
+@Test("Decoder KeyedContainer")
+func decoderKeyedContainer() async throws {
     let stream = InputByteStream("""
         {"answer":42}
         """)
@@ -13,10 +14,11 @@ test("KeyedContainer") {
     }
     let container = try decoder.container(keyedBy: Keys.self)
     let answer = try container.decode(Int.self, forKey: .answer)
-    expect(answer == 42)
+    #expect(answer == 42)
 }
 
-test("UnkeyedContainer") {
+@Test("Decoder UnkeyedContainer")
+func decoderUnkeyedContainer() async throws {
     let stream = InputByteStream("[1,[2],[3],4]")
     let decoder = try await JSON.Decoder(stream)
     var container = try decoder.unkeyedContainer()
@@ -26,18 +28,17 @@ test("UnkeyedContainer") {
     var nested2 = try container.nestedUnkeyedContainer()
     let int3 = try nested2.decode(Int.self)
     let int4 = try container.decode(Int.self)
-    expect(int1 == 1)
-    expect(int2 == 2)
-    expect(int3 == 3)
-    expect(int4 == 4)
+    #expect(int1 == 1)
+    #expect(int2 == 2)
+    #expect(int3 == 3)
+    #expect(int4 == 4)
 }
 
-test("SingleValueContainer") {
+@Test("Decoder SingleValueContainer")
+func decoderSingleValueContainer() async throws {
     let stream = InputByteStream("true")
     let decoder = try await JSON.Decoder(stream)
     let container = try decoder.singleValueContainer()
     let bool = try container.decode(Bool.self)
-    expect(bool == true)
+    #expect(bool == true)
 }
-
-await run()
