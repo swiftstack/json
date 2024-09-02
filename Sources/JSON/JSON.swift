@@ -2,7 +2,7 @@ import Stream
 
 public struct JSON {
     @dynamicMemberLookup
-    public enum Value {
+    public enum Value: Sendable {
         case null
         case bool(Bool)
         case number(Number)
@@ -10,7 +10,7 @@ public struct JSON {
         case array([JSON.Value])
         case object([String: JSON.Value])
 
-        public enum Number {
+        public enum Number: Sendable {
             case int(Int)
             case uint(UInt)
             case double(Double)

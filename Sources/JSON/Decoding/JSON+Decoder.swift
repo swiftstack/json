@@ -8,10 +8,10 @@ extension JSON {
         let json: JSON.Value
         let options: Options
 
-        public struct Options {
+        public struct Options: Sendable {
             public let parseNullAsOptional: Bool
 
-            public static var `default` = Options(parseNullAsOptional: true)
+            public static let `default` = Options(parseNullAsOptional: true)
         }
 
         public init(_ json: JSON.Value, options: Options = .default) throws {

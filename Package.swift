@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 import PackageDescription
 
 let package = Package(
@@ -19,9 +19,6 @@ let package = Package(
             name: "Codable"),
         .package(
             name: "Stream"),
-        .package(
-            url: "https://github.com/apple/swift-testing.git",
-            from: "0.12.0"),
     ],
     targets: [
         .target(
@@ -30,26 +27,15 @@ let package = Package(
                 .product(name: "Platform", package: "platform"),
                 .product(name: "Codable", package: "codable"),
                 .product(name: "Stream", package: "stream"),
-            ],
-            swiftSettings: swift6),
+            ]),
         .testTarget(
             name: "Tests",
             dependencies: [
                 .target(name: "JSON"),
                 .product(name: "Stream", package: "stream"),
-                .product(name: "Testing", package: "swift-testing"),
             ]),
     ]
 )
-
-let swift6: [SwiftSetting] = [
-    .enableUpcomingFeature("ConciseMagicFile"),
-    .enableUpcomingFeature("ForwardTrailingClosures"),
-    .enableUpcomingFeature("ExistentialAny"),
-    .enableUpcomingFeature("StrictConcurrency"),
-    .enableUpcomingFeature("ImplicitOpenExistentials"),
-    .enableUpcomingFeature("BareSlashRegexLiterals"),
-]
 
 // MARK: - custom package source
 
