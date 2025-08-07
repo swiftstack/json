@@ -28,6 +28,20 @@ func inputStreamNumber() async throws {
 
     let double = try await JSON.Value.decode(from: InputByteStream("-42.42"))
     #expect(double == .number(.double(-42.42)))
+
+    let dble = try await JSON.Value.decode(from: InputByteStream("-.42"))
+    #expect(dble == .number(.double(-0.42)))
+
+    let exp = try await JSON.Value.decode(from: InputByteStream("4.2e1"))
+    #expect(exp == .number(.double(42)))
+
+    await #expect(throws: JSON.Error.invalidJSON) {
+        try await JSON.Value.decode(from: InputByteStream("-\(UInt.max)"))
+    }
+
+    await #expect(throws: Never.self) {
+        try await JSON.Value.decode(from: InputByteStream("-\(Int.max)"))
+    }
 }
 
 @Test("InputStream string")

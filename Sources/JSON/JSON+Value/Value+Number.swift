@@ -1,39 +1,40 @@
 import Stream
-import Platform
 
 extension JSON.Value.Number {
+    // TODO: https://github.com/fastfloat/fast_float
     public static func decode(from stream: StreamReader) async throws -> Self {
         let isNegative = try await stream.consume(.hyphen) ? true : false
         var isInteger = true
 
-        var string = [UInt8]()
+        let string = try await stream.read(while: {
+            let isDouble =
+                $0 == .dot ||
+                $0 == .hyphen ||
+                $0 == .plus ||
+                $0 == .e ||
+                $0 == .E
 
-        try await stream.read(while: isDigit) { bytes in
-            string.append(contentsOf: bytes)
+            isInteger = isInteger && !isDouble
+
+            return isDigit($0) || isDouble
+        }) { bytes in
+            String(decoding: bytes, as: UTF8.self)
         }
 
-        if (try? await stream.consume(.dot)) ?? false {
-            isInteger = false
-            string.append(.dot)
-            try await stream.read(while: isDigit) { bytes in
-                string.append(contentsOf: bytes)
-            }
-        }
-        string.append(0)
-
-        let casted = unsafeBitCast(string, to: [Int8].self)
-
-        switch isNegative {
+        switch isInteger {
         case true:
-            switch isInteger {
-            case true: return .int(-strtol(casted, nil, 10))
-            case false: return .double(-strtod(casted, nil))
+            guard let value = UInt(string) else {
+                throw JSON.Error.invalidJSON
             }
-        case false:
-            switch isInteger {
-            case true: return .uint(strtoul(casted, nil, 10))
-            case false: return .double(strtod(casted, nil))
+            if isNegative && value > Int.max {
+                throw JSON.Error.invalidJSON
             }
+            return isNegative ? .int(-Int(value)) : .uint(value)
+        default:
+            guard let value = Double(string) else {
+                throw JSON.Error.invalidJSON
+            }
+            return .double(isNegative ? -value : value)
         }
     }
 

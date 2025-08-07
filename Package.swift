@@ -14,8 +14,6 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Platform"),
-        .package(
             name: "Codable"),
         .package(
             name: "Stream"),
@@ -24,7 +22,6 @@ let package = Package(
         .target(
             name: "JSON",
             dependencies: [
-                .product(name: "Platform", package: "platform"),
                 .product(name: "Codable", package: "codable"),
                 .product(name: "Stream", package: "stream"),
             ]),
