@@ -11,10 +11,10 @@ extension JSON {
         }
 
         // FIXME: [Concurrency] should be async StreamWriter
-        let storage: OutputByteStream
+        let storage: ByteArrayOutputStream
 
         // FIXME: [Concurrency] should be async StreamWriter
-        init(_ writer: OutputByteStream) {
+        init(_ writer: ByteArrayOutputStream) {
             self.storage = writer
         }
 

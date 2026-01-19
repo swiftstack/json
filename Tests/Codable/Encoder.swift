@@ -8,7 +8,7 @@ func encoderKeyedContainer() async throws {
     let expected = """
     {"answer":42}
     """
-    let output = OutputByteStream()
+    let output = ByteArrayOutputStream()
     let encoder = JSON.Encoder(output)
     enum Keys: CodingKey {
         case answer
@@ -22,7 +22,7 @@ func encoderKeyedContainer() async throws {
 @Test("Encoder UnkeyedContainer")
 func encoderUnkeyedContainer() async throws {
     let expected = "[1,[2],[3],4]"
-    let output = OutputByteStream()
+    let output = ByteArrayOutputStream()
     let encoder = JSON.Encoder(output)
     var container = encoder.unkeyedContainer()
     try container.encode(1)
@@ -38,7 +38,7 @@ func encoderUnkeyedContainer() async throws {
 @Test("Encoder SingleValueContainer")
 func encoderSingleValueContainer() async throws {
     let expected = "true"
-    let output = OutputByteStream()
+    let output = ByteArrayOutputStream()
     let encoder = JSON.Encoder(output)
     var container = encoder.singleValueContainer()
     try container.encode(true)

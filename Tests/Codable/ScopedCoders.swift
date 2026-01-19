@@ -5,12 +5,12 @@ import JSON
 
 @Test("withScopedEncoder")
 func withScopedEncoder() async throws {
-    try JSON.withScopedEncoder(using: OutputByteStream()) { _ in
+    try JSON.withScopedEncoder(using: ByteArrayOutputStream()) { _ in
     }
 }
 
 @Test("withScopedDecoder")
 func withScopedDecoder() async throws {
-    try await JSON.withScopedDecoder(using: InputByteStream("null")) { _ in
+    try await JSON.withScopedDecoder(using: ByteArrayInputStream("null")) { _ in
     }
 }

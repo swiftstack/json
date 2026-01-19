@@ -97,8 +97,7 @@ extension JSON {
 
 extension JSON {
     public static func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
-        // FIXME: [Concurrency]
-        let stream = OutputByteStream()
+        let stream = ByteArrayOutputStream()
         let encoder = Encoder(stream)
         try value.encode(to: encoder)
         try encoder.close()
@@ -111,12 +110,16 @@ extension JSON {
         options: Decoder.Options = .default
     ) async throws -> T {
         // FIXME: [Concurrency] should be sync
-        try await decode(type, from: InputByteStream(json), options: options)
+        try await decode(
+            type,
+            from: ByteArrayInputStream(json),
+            options: options
+        )
     }
 
     public static func encode(encodable value: Encodable) throws -> [UInt8] {
         // FIXME: [Concurrency]
-        let stream = OutputByteStream()
+        let stream = ByteArrayOutputStream()
         let encoder = Encoder(stream)
         try value.encode(to: encoder)
         try encoder.close()
@@ -129,8 +132,10 @@ extension JSON {
         options: Decoder.Options = .default
     ) async throws -> Decodable {
         // FIXME: [Concurrency] should be sync
-        try await decode(decodable: type,
-            from: InputByteStream(json),
-            options: options)
+        try await decode(
+            decodable: type,
+            from: ByteArrayInputStream(json),
+            options: options
+        )
     }
 }

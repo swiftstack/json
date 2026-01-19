@@ -5,7 +5,7 @@ extension JSON {
         using writer: StreamWriter,
         _ body: (Encoder) async throws -> T
     ) async throws -> T {
-        let stream = OutputByteStream()
+        let stream = ByteArrayOutputStream()
         let encoder = Encoder(stream)
         let result = try await body(encoder)
         try encoder.close()
@@ -14,7 +14,7 @@ extension JSON {
     }
 
     public static func withScopedEncoder<T>(
-        using stream: OutputByteStream,
+        using stream: ByteArrayOutputStream,
         _ body: (Encoder) throws -> T
     ) throws -> T {
         let encoder = Encoder(stream)

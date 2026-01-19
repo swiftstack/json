@@ -5,10 +5,11 @@ import Stream
 
 @Test("Decoder KeyedContainer")
 func decoderKeyedContainer() async throws {
-    let stream = InputByteStream("""
+    let stream = ByteArrayInputStream("""
         {"answer":42}
         """)
-    let decoder = try await JSON.Decoder(stream)
+    let value = try await JSON.Value.decode(from: stream)
+    let decoder = try JSON.Decoder(value)
     enum Keys: CodingKey {
         case answer
     }
@@ -19,8 +20,9 @@ func decoderKeyedContainer() async throws {
 
 @Test("Decoder UnkeyedContainer")
 func decoderUnkeyedContainer() async throws {
-    let stream = InputByteStream("[1,[2],[3],4]")
-    let decoder = try await JSON.Decoder(stream)
+    let stream = ByteArrayInputStream("[1,[2],[3],4]")
+    let value = try await JSON.Value.decode(from: stream)
+    let decoder = try JSON.Decoder(value)
     var container = try decoder.unkeyedContainer()
     let int1 = try container.decode(Int.self)
     var nested1 = try container.nestedUnkeyedContainer()
@@ -36,8 +38,9 @@ func decoderUnkeyedContainer() async throws {
 
 @Test("Decoder SingleValueContainer")
 func decoderSingleValueContainer() async throws {
-    let stream = InputByteStream("true")
-    let decoder = try await JSON.Decoder(stream)
+    let stream = ByteArrayInputStream("true")
+    let value = try await JSON.Value.decode(from: stream)
+    let decoder = try JSON.Decoder(value)
     let container = try decoder.singleValueContainer()
     let bool = try container.decode(Bool.self)
     #expect(bool == true)

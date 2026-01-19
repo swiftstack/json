@@ -20,10 +20,10 @@ let model = JSON.decode(Model.self, from: bytes)
 ### Streaming API
 
 ```swift
-let output = OutputByteStream()
+let output = ByteArrayOutputStream()
 JSON.encode(Model(), to: output)
 
-let input = InputByteStream(output.bytes)
+let input = ByteArrayInputStream(output.bytes)
 let model = JSON.decode(Model.self, from: input)
 ```
 

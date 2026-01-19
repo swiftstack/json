@@ -5,7 +5,7 @@ import Stream
 
 @Test("JSON.decode keyed")
 func decodeKeyed() async throws {
-    let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
+    let json = ByteArrayInputStream(#"{"answer":42,"hello":"Hello, World!"}"#)
     struct Model: Decodable {
         let answer: Int
         let hello: String
@@ -17,7 +17,7 @@ func decodeKeyed() async throws {
 
 @Test("JSON.decode formatted")
 func decodeEscaped() async throws {
-    let json = InputByteStream("""
+    let json = ByteArrayInputStream("""
         {
             "answer":42,
             "hello":"Hello, World!"
@@ -34,7 +34,7 @@ func decodeEscaped() async throws {
 
 @Test("JSON.decode escaped unicode")
 func decodeEscapedUnicode() async throws {
-    let json = InputByteStream(
+    let json = ByteArrayInputStream(
         #"{"hello":"\u3053\u3093\u306b\u3061\u306f"}"#)
     struct Model: Decodable {
         let hello: String
@@ -45,7 +45,7 @@ func decodeEscapedUnicode() async throws {
 
 @Test("JSON.decode nested keyed")
 func decodeKeyedNested() async throws {
-    let json = InputByteStream(
+    let json = ByteArrayInputStream(
         #"{"answer":42,"nested":{"hello":"Hello, World!"}}"#)
     struct Model: Decodable {
         struct Nested: Decodable {
@@ -61,7 +61,7 @@ func decodeKeyedNested() async throws {
 
 @Test("JSON.decode nested keyed in the middle")
 func decodeKeyedNestedInTheMiddle() async throws {
-    let json = InputByteStream(
+    let json = ByteArrayInputStream(
         #"{"nested":{"hello":"Hello, World!"},"answer":42}"#)
     struct Model: Decodable {
         struct Nested: Decodable {
@@ -77,7 +77,7 @@ func decodeKeyedNestedInTheMiddle() async throws {
 
 @Test("JSON.decode nested array in the middle")
 func decodeNestedArrayInTheMiddle() async throws {
-    let json = InputByteStream(
+    let json = ByteArrayInputStream(
         #"{"nested":{"array":[1,2]},"answer":42}"#)
     struct Model: Decodable {
         struct Nested: Decodable {
@@ -93,7 +93,7 @@ func decodeNestedArrayInTheMiddle() async throws {
 
 @Test("JSON.decode nested arrays in the middle")
 func decodeNestedArraysInTheMiddle() async throws {
-    let json = InputByteStream(
+    let json = ByteArrayInputStream(
         #"{"nested":{"array":[[1,2],[3,4]]},"answer":42}"#)
     struct Model: Decodable {
         struct Nested: Decodable {
@@ -110,14 +110,14 @@ func decodeNestedArraysInTheMiddle() async throws {
 
 @Test("JSON.decode unkeyed")
 func decodeUnkeyed() async throws {
-    let json = InputByteStream("[1,2,3]")
+    let json = ByteArrayInputStream("[1,2,3]")
     let object = try await JSON.decode([Int].self, from: json)
     #expect(object == [1, 2, 3])
 }
 
 @Test("Decode unkeyed of unkeyed")
 func decodeUnkeyedOfUnkeyed() async throws {
-    let json = InputByteStream("[[1,2],[3,4]]")
+    let json = ByteArrayInputStream("[[1,2],[3,4]]")
     let object = try await JSON.decode([[Int]].self, from: json)
     #expect(object.first ?? [] == [1, 2])
     #expect(object.last ?? [] == [3, 4])
@@ -125,7 +125,7 @@ func decodeUnkeyedOfUnkeyed() async throws {
 
 @Test("Decode enum")
 func decodeEnum() async throws {
-    let json = InputByteStream(#"{"single":1,"array":[1,2,3]}"#)
+    let json = ByteArrayInputStream(#"{"single":1,"array":[1,2,3]}"#)
     enum Number: Int, Decodable {
         case one = 1
         case two
@@ -142,7 +142,7 @@ func decodeEnum() async throws {
 
 @Test("Decode Decodable")
 func decodeDecodable() async throws {
-    let json = InputByteStream(#"{"answer":42,"hello":"Hello, World!"}"#)
+    let json = ByteArrayInputStream(#"{"answer":42,"hello":"Hello, World!"}"#)
     struct Model: Decodable {
         let answer: Int
         let hello: String

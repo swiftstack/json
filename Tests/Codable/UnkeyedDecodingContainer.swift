@@ -5,7 +5,10 @@ import Stream
 
 @Test("UnkeyedDecodingContainer")
 func unkeyedDecodingContainer() async throws {
-    let decoder = try await JSON.Decoder(InputByteStream("[1,2]"))
+    let inputStream = ByteArrayInputStream("[1,2]")
+    let value = try await JSON.Value.decode(from: inputStream)
+    let decoder = try JSON.Decoder(value)
+
     var unkeyedContainer = try decoder.unkeyedContainer()
     #expect(unkeyedContainer.count == 2)
     #expect(unkeyedContainer.isAtEnd == false)
@@ -19,7 +22,10 @@ func unkeyedDecodingContainer() async throws {
 
 @Test("UnkeyedDecodingContainer.nestedUnkeyedContainer()")
 func nestedUnkeyedDecodingContainer() async throws {
-    let decoder = try await JSON.Decoder(InputByteStream("[[1],[2]]"))
+    let inputStream = ByteArrayInputStream("[[1],[2]]")
+    let value = try await JSON.Value.decode(from: inputStream)
+    let decoder = try JSON.Decoder(value)
+
     var unkeyedContainer = try decoder.unkeyedContainer()
     #expect(unkeyedContainer.count == 2)
     #expect(unkeyedContainer.isAtEnd == false)
