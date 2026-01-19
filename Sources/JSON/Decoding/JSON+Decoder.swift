@@ -47,14 +47,3 @@ extension JSON {
         }
     }
 }
-
-// testable
-extension JSON.Decoder {
-    convenience init(
-        _ stream: InputByteStream,
-        options: Options = .default
-    ) async throws {
-        let value = try await JSON.Value.decode(from: stream)
-        try self.init(value, options: options)
-    }
-}
