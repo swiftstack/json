@@ -17,6 +17,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            name: "ASCII"),
+        .package(
             name: "Codable"),
         .package(
             name: "Stream"),
@@ -25,6 +27,7 @@ let package = Package(
         .target(
             name: "JSON",
             dependencies: [
+                .product(name: "ASCII", package: "ascii"),
                 .product(name: "Codable", package: "codable"),
                 .product(name: "Stream", package: "stream"),
             ]),

@@ -2,7 +2,7 @@ import Stream
 
 extension String {
     static func decode(from stream: StreamReader) async throws -> Self {
-        guard try await stream.consume(.doubleQuote) else {
+        guard try await stream.consume(.quote) else {
             throw JSON.Error.invalidJSON
         }
 
@@ -10,10 +10,10 @@ extension String {
 
         func readEscaped() async throws {
             switch try await stream.read(UInt8.self) {
-            case .doubleQuote: result.append(.doubleQuote)
+            case .quote: result.append(.quote)
             case .n: result.append(.lf)
             case .r: result.append(.cr)
-            case .t: result.append(.tab)
+            case .t: result.append(.ht)
             case .backslash: result.append(.backslash)
             case .u: try await readUnicodeScalar()
             default: throw JSON.Error.invalidJSON
@@ -37,7 +37,7 @@ extension String {
         loop: while true {
             let byte = try await stream.read(UInt8.self)
             switch byte {
-            case .doubleQuote: break loop
+            case .quote: break loop
             case .backslash: try await readEscaped()
             case _ where !byte.isControl: result.append(byte)
             default: throw JSON.Error.invalidJSON

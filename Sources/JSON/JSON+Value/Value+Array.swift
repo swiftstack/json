@@ -2,7 +2,7 @@ import Stream
 
 extension Array where Element == JSON.Value {
     public static func decode(from stream: StreamReader) async throws -> Self {
-        guard try await stream.consume(.squareBracketOpen) else {
+        guard try await stream.consume(.openBracket) else {
             throw JSON.Error.invalidJSON
         }
         var result = [JSON.Value]()
@@ -10,7 +10,7 @@ extension Array where Element == JSON.Value {
             try await stream.consume(set: .whitespaces)
 
             switch try await stream.peek() {
-            case .squareBracketClose:
+            case .closeBracket:
                 try await stream.consume(count: 1)
                 break loop
             case .comma:
@@ -23,7 +23,7 @@ extension Array where Element == JSON.Value {
     }
 
     public func encode(to stream: StreamWriter) async throws {
-        try await stream.write(.squareBracketOpen)
+        try await stream.write(.openBracket)
         var needComma = false
         for value in self {
             switch needComma {
@@ -32,6 +32,6 @@ extension Array where Element == JSON.Value {
             }
             try await value.encode(to: stream)
         }
-        try await stream.write(.squareBracketClose)
+        try await stream.write(.closeBracket)
     }
 }

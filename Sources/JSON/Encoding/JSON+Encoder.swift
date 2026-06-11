@@ -32,8 +32,8 @@ extension JSON {
 
         func openContainer(_ type: ContainerType) throws {
             switch type {
-            case .keyed: storage.write(.curlyBracketOpen)
-            case .unkeyed: storage.write(.squareBracketOpen)
+            case .keyed: storage.write(.openBrace)
+            case .unkeyed: storage.write(.openBracket)
             case .single: break
             }
             openedContainers.append(type)
@@ -42,8 +42,8 @@ extension JSON {
         func closeContainer() throws {
             if let type = openedContainers.popLast() {
                 switch type {
-                case .keyed: storage.write(.curlyBracketClose)
-                case .unkeyed: storage.write(.squareBracketClose)
+                case .keyed: storage.write(.closeBrace)
+                case .unkeyed: storage.write(.closeBracket)
                 case .single: break
                 }
             }
@@ -149,13 +149,13 @@ extension JSON.Encoder {
     }
 
     func encode(_ value: String) throws {
-        storage.write(.doubleQuote)
+        storage.write(.quote)
 
         for scalar in value.unicodeScalars {
             switch scalar {
             case "\"":
                 storage.write(.backslash)
-                storage.write(.doubleQuote)
+                storage.write(.quote)
             case "\\":
                 storage.write(.backslash)
                 storage.write(.backslash)
@@ -188,6 +188,6 @@ extension JSON.Encoder {
             }
         }
 
-        storage.write(.doubleQuote)
+        storage.write(.quote)
     }
 }

@@ -1,15 +1,16 @@
 import Stream
+import ASCII
 
 extension JSON.Value.Number {
     // TODO: https://github.com/fastfloat/fast_float
     public static func decode(from stream: StreamReader) async throws -> Self {
-        let isNegative = try await stream.consume(.hyphen) ? true : false
+        let isNegative = try await stream.consume(.hyphenMinus) ? true : false
         var isInteger = true
 
         let string = try await stream.read(while: {
             let isDouble =
-                $0 == .dot ||
-                $0 == .hyphen ||
+                $0 == .period ||
+                $0 == .hyphenMinus ||
                 $0 == .plus ||
                 $0 == .e ||
                 $0 == .E

@@ -11,10 +11,10 @@ extension JSON.Value {
         }
 
         switch try await stream.peek() {
-        case .curlyBracketOpen:
+        case .openBrace:
             return .object(try await [String: JSON.Value].decode(from: stream))
 
-        case .squareBracketOpen:
+        case .openBracket:
             return .array(try await [JSON.Value].decode(from: stream))
 
         case .n:
@@ -29,10 +29,10 @@ extension JSON.Value {
             try await consume(.false)
             return .bool(false)
 
-        case (.zero)...(.nine), .hyphen:
+        case (.zero)...(.nine), .hyphenMinus:
             return .number(try await Number.decode(from: stream))
 
-        case .doubleQuote:
+        case .quote:
             return .string(try await String.decode(from: stream))
 
         default:
@@ -49,9 +49,9 @@ extension JSON.Value {
         case .number(let number):
             try await number.encode(to: stream)
         case .string(let string):
-            try await stream.write(.doubleQuote)
+            try await stream.write(.quote)
             try await stream.write(string)
-            try await stream.write(.doubleQuote)
+            try await stream.write(.quote)
         case .array(let values):
             try await values.encode(to: stream)
         case .object(let object):
