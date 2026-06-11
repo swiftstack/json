@@ -103,7 +103,7 @@ public struct JSON {
 }
 ```
 
-JSON encode: 33053 ops/s
-Stdlib encode: 42387 ops/s
-JSON decode: 9592 ops/s
-Stdlib decode: 43396 ops/s
+JSON encode: 32262 ops/s
+Stdlib encode: 30840 ops/s
+JSON decode: 11276 ops/s
+Stdlib decode: 30661 ops/s

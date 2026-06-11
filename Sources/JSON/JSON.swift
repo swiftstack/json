@@ -96,7 +96,9 @@ extension JSON {
 // MARK: [UInt8]
 
 extension JSON {
-    public static func encode<T: Encodable>(_ value: T) throws -> [UInt8] {
+    public static func encode<T: Encodable>(
+        _ value: T
+    ) async throws -> [UInt8] {
         let stream = ByteArrayOutputStream()
         let encoder = Encoder(stream)
         try value.encode(to: encoder)
@@ -109,7 +111,6 @@ extension JSON {
         from json: [UInt8],
         options: Decoder.Options = .default
     ) async throws -> T {
-        // FIXME: [Concurrency] should be sync
         try await decode(
             type,
             from: ByteArrayInputStream(json),
@@ -117,8 +118,9 @@ extension JSON {
         )
     }
 
-    public static func encode(encodable value: Encodable) throws -> [UInt8] {
-        // FIXME: [Concurrency]
+    public static func encode(
+        encodable value: Encodable
+    ) throws -> [UInt8] {
         let stream = ByteArrayOutputStream()
         let encoder = Encoder(stream)
         try value.encode(to: encoder)
@@ -131,7 +133,6 @@ extension JSON {
         from json: [UInt8],
         options: Decoder.Options = .default
     ) async throws -> Decodable {
-        // FIXME: [Concurrency] should be sync
         try await decode(
             decodable: type,
             from: ByteArrayInputStream(json),
