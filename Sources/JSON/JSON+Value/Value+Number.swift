@@ -3,7 +3,7 @@ import ASCII
 
 extension JSON.Value.Number {
     // TODO: https://github.com/fastfloat/fast_float
-    public static func decode(from stream: StreamReader) async throws -> Self {
+    public static func decode(from stream: some StreamReader) async throws -> Self {
         let isNegative = try await stream.consume(.hyphenMinus) ? true : false
         var isInteger = true
 

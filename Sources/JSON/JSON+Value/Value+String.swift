@@ -1,7 +1,7 @@
 import Stream
 
 extension String {
-    static func decode(from stream: StreamReader) async throws -> Self {
+    static func decode(from stream: some StreamReader) async throws -> Self {
         guard try await stream.consume(.quote) else {
             throw JSON.Error.invalidJSON
         }

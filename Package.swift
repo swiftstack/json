@@ -30,6 +30,9 @@ let package = Package(
                 .product(name: "ASCII", package: "ascii"),
                 .product(name: "Codable", package: "codable"),
                 .product(name: "Stream", package: "stream"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
         .testTarget(
             name: "Tests",

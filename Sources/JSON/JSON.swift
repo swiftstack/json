@@ -46,7 +46,7 @@ public struct JSON {
 extension JSON {
     public static func encode<Model: Encodable>(
         _ value: Model,
-        to stream: StreamWriter
+        to stream: some StreamWriter
     ) async throws {
         try await withScopedEncoder(using: stream) { encoder in
             try value.encode(to: encoder)
@@ -55,7 +55,7 @@ extension JSON {
 
     public static func decode<Model: Decodable>(
         _ type: Model.Type,
-        from stream: StreamReader,
+        from stream: some StreamReader,
         options: Decoder.Options = .default
     ) async throws -> Model {
         try await withScopedDecoder(
@@ -81,7 +81,7 @@ extension JSON {
 
     public static func decode(
         decodable type: Decodable.Type,
-        from stream: StreamReader,
+        from stream: some StreamReader,
         options: Decoder.Options = .default
     ) async throws -> Decodable {
         try await withScopedDecoder(

@@ -1,7 +1,7 @@
 import Stream
 
 extension JSON {
-    public class Decoder: Swift.Decoder {
+    public final class Decoder: Swift.Decoder {
         public var codingPath: [CodingKey] { [] }
         public var userInfo: [CodingUserInfoKey: Any] { [:] }
 

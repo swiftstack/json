@@ -2,7 +2,7 @@ import Stream
 import Codable
 
 extension JSON {
-    public class Encoder: Swift.Encoder {
+    public final class Encoder: Swift.Encoder {
         public var codingPath: [CodingKey] {
             return []
         }

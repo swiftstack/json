@@ -1,7 +1,7 @@
 import Stream
 
 extension Array where Element == JSON.Value {
-    public static func decode(from stream: StreamReader) async throws -> Self {
+    public static func decode(from stream: some StreamReader) async throws -> Self {
         guard try await stream.consume(.openBracket) else {
             throw JSON.Error.invalidJSON
         }

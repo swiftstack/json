@@ -1,7 +1,7 @@
 import Stream
 
 extension Dictionary where Key == String, Value == JSON.Value {
-    public static func decode(from stream: StreamReader) async throws -> Self {
+    public static func decode(from stream: some StreamReader) async throws -> Self {
         guard try await stream.consume(.openBrace) else {
             throw JSON.Error.invalidJSON
         }

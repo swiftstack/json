@@ -1,7 +1,7 @@
 import Stream
 
 extension JSON.Value {
-    public static func decode(from stream: StreamReader) async throws -> Self {
+    public static func decode(from stream: some StreamReader) async throws -> Self {
         try await stream.consume(set: .whitespaces)
 
         func consume(_ value: [UInt8]) async throws {

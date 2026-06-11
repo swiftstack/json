@@ -3,7 +3,7 @@ import Stream
 extension JSON {
     // FIXME: currently pointless, designed for future lazy reading
     public static func withScopedDecoder<T>(
-        using reader: StreamReader,
+        using reader: some StreamReader,
         options: JSON.Decoder.Options = .default,
         _ body: (Decoder) throws -> T
     ) async throws -> T {

@@ -1,4 +1,4 @@
-class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
+final class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     var codingPath: [CodingKey] {
         return []
     }
@@ -20,7 +20,7 @@ class JSONUnkeyedDecodingContainer: UnkeyedDecodingContainer {
         return currentIndex == array.count
     }
 
-    @inline(__always)
+    @inline(always)
     private func inlinedDecodeIfPresent<T: JSONValueInitializable>(
         _ type: T.Type
     ) throws -> T? {
