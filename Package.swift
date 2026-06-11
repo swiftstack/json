@@ -24,6 +24,11 @@ let package = Package(
             name: "Stream"),
     ],
     targets: [
+        .executableTarget(
+            name: "Benchmarks",
+            dependencies: ["JSON"],
+            path: "./Benchmarks",
+        ),
         .target(
             name: "JSON",
             dependencies: [

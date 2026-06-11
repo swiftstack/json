@@ -1,6 +1,6 @@
 # JSON
 
-Fastest JSON implementation written in Swift.
+Obsolete JSON implementation written in Swift.
 
 ## Package.swift
 
@@ -56,16 +56,54 @@ public struct JSON {
 }
 ```
 
-## Performance
-`{"message":"Hello, World!"}`<br>
+## Performance (MacBook Pro 16 / M2 Max)
 
-JSON.JSONEncoder: 934 644 tasks/sec<br>
-Foundation.JSONEncoder: 92 619 tasks/sec<br>
+```json
+{
+  "orderId": "ORD-2025-12345",
+  "orderDate": "2025-01-15T10:30:00Z",
+  "customer": {
+    "customerId": 5678,
+    "name": "Michael Chen",
+    "email": "michael.chen@example.com"
+  },
+  "items": [
+    {
+      "productId": "PROD-001",
+      "name": "Wireless Mouse",
+      "quantity": 2,
+      "price": 29.99
+    },
+    {
+      "productId": "PROD-002",
+      "name": "USB Cable",
+      "quantity": 3,
+      "price": 9.99
+    }
+  ],
+  "shipping": {
+    "method": "Express",
+    "cost": 15.00,
+    "address": {
+      "street": "789 Pine Street",
+      "city": "Seattle",
+      "state": "WA",
+      "zipCode": "98101"
+    }
+  },
+  "payment": {
+    "method": "credit_card",
+    "last4": "4242",
+    "status": "paid"
+  },
+  "subtotal": 89.95,
+  "tax": 8.10,
+  "total": 113.05,
+  "status": "processing"
+}
+```
 
-JSON.JSONDecoder: 236 062 tasks/sec<br>
-Foundation.JSONDecoder: 226 515 tasks/sec<br>
-
-`{"message":"\u3053\u3093\u306B\u3061\u306F\u4E16\u754C\uFF01"}`<br>
-
-JSON.JSONDecoder: 179 440 tasks/sec<br>
-Foundation.JSONDecoder: 88 614 tasks/sec<br>
+JSON encode: 33053 ops/s
+Stdlib encode: 42387 ops/s
+JSON decode: 9592 ops/s
+Stdlib decode: 43396 ops/s
