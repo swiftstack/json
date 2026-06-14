@@ -41,102 +41,57 @@ public struct JSON {
     }
 }
 
-// MARK: generic
+// MARK: JSON.Value
 
-extension JSON {
-    public static func encode<Model: Encodable>(
-        _ value: Model,
-        to stream: some StreamWriter
-    ) async throws {
-        try await withScopedEncoder(using: stream) { encoder in
-            try value.encode(to: encoder)
-        }
-    }
-
-    public static func decode<Model: Decodable>(
-        _ type: Model.Type,
-        from stream: some StreamReader,
-        options: Decoder.Options = .default
-    ) async throws -> Model {
-        try await withScopedDecoder(
-            using: stream,
-            options: options
-        ) { decoder in
-            try Model(from: decoder)
+extension JSON.Value: Equatable {
+    public static func == (lhs: JSON.Value, rhs: JSON.Value) -> Bool {
+        switch (lhs, rhs) {
+        case (.null, .null): return true
+        case let (.bool(lhs), .bool(rhs)): return lhs == rhs
+        case let (.number(lhs), .number(rhs)): return lhs == rhs
+        case let (.string(lhs), .string(rhs)): return lhs == rhs
+        case let (.array(lhs), .array(rhs)): return lhs == rhs
+        case let (.object(lhs), .object(rhs)): return lhs == rhs
+        default: return false
         }
     }
 }
 
-// MARK: type-erased
-
-extension JSON {
-    public static func encode(
-        encodable value: Encodable,
-        to stream: StreamWriter
-    ) async throws {
-        try await withScopedEncoder(using: stream) { encoder in
-            try value.encode(to: encoder)
-        }
-    }
-
-    public static func decode(
-        decodable type: Decodable.Type,
-        from stream: some StreamReader,
-        options: Decoder.Options = .default
-    ) async throws -> Decodable {
-        try await withScopedDecoder(
-            using: stream,
-            options: options
-        ) { decoder in
-            try type.init(from: decoder)
+extension JSON.Value: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .null: return "null"
+        case .bool(let value): return value.description
+        case .number(let value): return value.description
+        case .string(let value): return "\"\(value)\""
+        case .array(let value): return value.description
+        case .object(let value): return value.description
         }
     }
 }
 
-// MARK: [UInt8]
+// MARK: JSON.Value.Number
 
-extension JSON {
-    public static func encode<T: Encodable>(
-        _ value: T
-    ) async throws -> [UInt8] {
-        let stream = ByteArrayOutputStream()
-        let encoder = Encoder(stream)
-        try value.encode(to: encoder)
-        try encoder.close()
-        return stream.bytes
+extension JSON.Value.Number: Equatable {
+    public static func == (
+        lhs: JSON.Value.Number,
+        rhs: JSON.Value.Number
+    ) -> Bool {
+        switch (lhs, rhs) {
+        case let (.int(lhs), .int(rhs)): return lhs == rhs
+        case let (.uint(lhs), .uint(rhs)): return lhs == rhs
+        case let (.double(lhs), .double(rhs)): return lhs == rhs
+        default: return false
+        }
     }
+}
 
-    public static func decode<T: Decodable>(
-        _ type: T.Type,
-        from json: [UInt8],
-        options: Decoder.Options = .default
-    ) async throws -> T {
-        try await decode(
-            type,
-            from: ByteArrayInputStream(json),
-            options: options
-        )
-    }
-
-    public static func encode(
-        encodable value: Encodable
-    ) throws -> [UInt8] {
-        let stream = ByteArrayOutputStream()
-        let encoder = Encoder(stream)
-        try value.encode(to: encoder)
-        try encoder.close()
-        return stream.bytes
-    }
-
-    public static func decode(
-        decodable type: Decodable.Type,
-        from json: [UInt8],
-        options: Decoder.Options = .default
-    ) async throws -> Decodable {
-        try await decode(
-            decodable: type,
-            from: ByteArrayInputStream(json),
-            options: options
-        )
+extension JSON.Value.Number: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .int(let int): return int.description
+        case .uint(let uint): return uint.description
+        case .double(let double): return double.description
+        }
     }
 }

@@ -7,17 +7,17 @@ let bytes = [UInt8](input.utf8)
 let model = try JSONDecoder().decode(Model.self, from: data)
 
 await measure(name: "JSON encode", duration: .seconds(3)) {
-    blackHole(try! await JSON.encode(model))
+    blackHole(try! JSON.encode(model))
 }
 
 await measure(name: "Stdlib encode", duration: .seconds(3)) {
-    blackHole(try! await encode(model))
+    blackHole(try! JSONEncoder().encode(model))
 }
 
 await measure(name: "JSON decode", duration: .seconds(3)) {
-    blackHole(try! await JSON.decode(Model.self, from: bytes))
+    blackHole(try! JSON.decode(Model.self, from: bytes))
 }
 
 await measure(name: "Stdlib decode", duration: .seconds(3)) {
-    blackHole(try! await decode(Model.self, from: data))
+    blackHole(try! JSONDecoder().decode(Model.self, from: data))
 }

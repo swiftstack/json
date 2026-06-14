@@ -1,3 +1,4 @@
+import JSON
 import Stream
 
 extension Dictionary where Key == String, Value == JSON.Value {

@@ -1,3 +1,5 @@
+import JSON
+import Contacts
 import Stream
 
 extension JSON.Value {
@@ -56,33 +58,6 @@ extension JSON.Value {
             try await values.encode(to: stream)
         case .object(let object):
             try await object.encode(to: stream)
-        }
-    }
-}
-
-extension JSON.Value: Equatable {
-    public static func == (lhs: JSON.Value, rhs: JSON.Value) -> Bool {
-        switch (lhs, rhs) {
-        case (.null, .null): return true
-        case let (.bool(lhs), .bool(rhs)): return lhs == rhs
-        case let (.number(lhs), .number(rhs)): return lhs == rhs
-        case let (.string(lhs), .string(rhs)): return lhs == rhs
-        case let (.array(lhs), .array(rhs)): return lhs == rhs
-        case let (.object(lhs), .object(rhs)): return lhs == rhs
-        default: return false
-        }
-    }
-}
-
-extension JSON.Value: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .null: return "null"
-        case .bool(let value): return value.description
-        case .number(let value): return value.description
-        case .string(let value): return "\"\(value)\""
-        case .array(let value): return value.description
-        case .object(let value): return value.description
         }
     }
 }

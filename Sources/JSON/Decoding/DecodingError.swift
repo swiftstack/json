@@ -1,4 +1,4 @@
-extension DecodingError.Context {
+public extension DecodingError.Context {
     static func description(_ string: String) -> DecodingError.Context {
         return DecodingError.Context(codingPath: [], debugDescription: string)
     }
@@ -18,7 +18,7 @@ extension DecodingError.Context {
     }
 }
 
-extension DecodingError {
+public extension DecodingError {
     static func keyNotFound(_ key: any CodingKey) -> Self {
         .keyNotFound(key, .init(codingPath: [], debugDescription: ""))
     }

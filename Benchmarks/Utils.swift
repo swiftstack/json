@@ -24,13 +24,3 @@ func measure(
 func blackHole<T>(_ value: T) {
     _ = value
 }
-
-// MARK: async versions
-
-func encode<T: Encodable>(_ value: T) async throws -> Data {
-    try JSONEncoder().encode(model)
-}
-
-func decode<T: Decodable>(_ type: T.Type, from data: Data) async throws -> T {
-    try JSONDecoder().decode(T.self, from: data)
-}

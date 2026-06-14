@@ -1,4 +1,7 @@
+@testable import JSON
 import Stream
+
+// Encoder
 
 extension JSON {
     public static func withScopedEncoder<T>(
@@ -20,6 +23,23 @@ extension JSON {
         let encoder = Encoder(stream)
         let result = try body(encoder)
         try encoder.close()
+        return result
+    }
+}
+
+// Decoder
+
+extension JSON {
+    // FIXME: currently pointless, designed for future lazy reading
+    public static func withScopedDecoder<T>(
+        using reader: some StreamReader,
+        options: JSON.Decoder.Options = .default,
+        _ body: (Decoder) throws -> T
+    ) async throws -> T {
+        let json = try await JSON.Value.decode(from: reader)
+        let decoder = try Decoder(json, options: options)
+        let result = try body(decoder)
+        try decoder.close()
         return result
     }
 }

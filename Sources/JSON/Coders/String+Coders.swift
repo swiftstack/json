@@ -1,27 +1,28 @@
+import Constants
 import Stream
 
 extension String {
-    static func decode(from stream: some StreamReader) async throws -> Self {
-        guard try await stream.consume(.quote) else {
+    static func decode(from stream: ByteArrayInputStream) throws -> Self {
+        guard try stream.consume(.quote) else {
             throw JSON.Error.invalidJSON
         }
 
         var result: [UInt8] = []
 
-        func readEscaped() async throws {
-            switch try await stream.read(UInt8.self) {
+        func readEscaped() throws {
+            switch try stream.read(UInt8.self) {
             case .quote: result.append(.quote)
             case .n: result.append(.lf)
             case .r: result.append(.cr)
             case .t: result.append(.ht)
             case .backslash: result.append(.backslash)
-            case .u: try await readUnicodeScalar()
+            case .u: try readUnicodeScalar()
             default: throw JSON.Error.invalidJSON
             }
         }
 
-        func readUnicodeScalar() async throws {
-            let code = try await stream.read(count: 4) { buffer in
+        func readUnicodeScalar() throws {
+            let code = try stream.read(count: 4) { buffer in
                 return Int(hex: buffer)
             }
             guard
@@ -35,10 +36,10 @@ extension String {
         }
 
         loop: while true {
-            let byte = try await stream.read(UInt8.self)
+            let byte = try stream.read(UInt8.self)
             switch byte {
             case .quote: break loop
-            case .backslash: try await readEscaped()
+            case .backslash: try readEscaped()
             case _ where !byte.isControl: result.append(byte)
             default: throw JSON.Error.invalidJSON
             }
@@ -48,6 +49,4 @@ extension String {
     }
 }
 
-extension UInt8 {
-    var isControl: Bool { Set<UInt8>.controls.contains(self) }
-}
+

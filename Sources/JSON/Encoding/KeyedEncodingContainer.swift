@@ -1,5 +1,6 @@
 import Stream
 import Codable
+import Constants
 
 struct JSONKeyedEncodingContainer<K: CodingKey>
 : KeyedEncodingContainerProtocol {

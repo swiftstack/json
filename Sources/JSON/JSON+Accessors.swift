@@ -1,4 +1,18 @@
 extension JSON.Value {
+    public subscript(index: Int) -> JSON.Value? {
+        switch self {
+        case .array(let array) where index < array.count: return array[index]
+        default: return nil
+        }
+    }
+
+    public subscript(key: String) -> JSON.Value? {
+        switch self {
+        case .object(let object): return object[key]
+        default: return nil
+        }
+    }
+
     public var booleanValue: Bool? {
         switch self {
         case .bool(let value): return value
@@ -35,20 +49,6 @@ extension JSON.Value {
     public var stringValue: String? {
         switch self {
         case .string(let value): return value
-        default: return nil
-        }
-    }
-
-    public subscript(index: Int) -> JSON.Value? {
-        switch self {
-        case .array(let array) where index < array.count: return array[index]
-        default: return nil
-        }
-    }
-
-    public subscript(key: String) -> JSON.Value? {
-        switch self {
-        case .object(let object): return object[key]
         default: return nil
         }
     }

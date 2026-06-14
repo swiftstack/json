@@ -1,3 +1,4 @@
+import JSON
 import Stream
 
 extension Array where Element == JSON.Value {

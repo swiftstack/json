@@ -1,5 +1,6 @@
-import Stream
+import JSON
 import ASCII
+import Stream
 
 extension JSON.Value.Number {
     // TODO: https://github.com/fastfloat/fast_float
@@ -49,29 +50,5 @@ extension JSON.Value.Number {
 
     private static func isDigit(_ byte: UInt8) -> Bool {
         byte >= .zero && byte <= .nine
-    }
-}
-
-extension JSON.Value.Number: Equatable {
-    public static func == (
-        lhs: JSON.Value.Number,
-        rhs: JSON.Value.Number
-    ) -> Bool {
-        switch (lhs, rhs) {
-        case let (.int(lhs), .int(rhs)): return lhs == rhs
-        case let (.uint(lhs), .uint(rhs)): return lhs == rhs
-        case let (.double(lhs), .double(rhs)): return lhs == rhs
-        default: return false
-        }
-    }
-}
-
-extension JSON.Value.Number: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .int(let int): return int.description
-        case .uint(let uint): return uint.description
-        case .double(let double): return double.description
-        }
     }
 }

@@ -14,6 +14,9 @@ let package = Package(
         .library(
             name: "JSON",
             targets: ["JSON"]),
+        .library(
+            name: "AsyncJSON",
+            targets: ["AsyncJSON"]),
     ],
     dependencies: [
         .package(
@@ -24,16 +27,29 @@ let package = Package(
             name: "Stream"),
     ],
     targets: [
-        .executableTarget(
-            name: "Benchmarks",
-            dependencies: ["JSON"],
-            path: "./Benchmarks",
-        ),
+        .target(
+            name: "Constants",
+            dependencies: [
+                .product(name: "ASCII", package: "ascii"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
+            ]),
         .target(
             name: "JSON",
             dependencies: [
+                .target(name: "Constants"),
                 .product(name: "ASCII", package: "ascii"),
                 .product(name: "Codable", package: "codable"),
+                .product(name: "Stream", package: "stream"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
+            ]),
+        .target(
+            name: "AsyncJSON",
+            dependencies: [
+                .target(name: "JSON"),
                 .product(name: "Stream", package: "stream"),
             ],
             swiftSettings: [
@@ -43,8 +59,15 @@ let package = Package(
             name: "Tests",
             dependencies: [
                 .target(name: "JSON"),
-                .product(name: "Stream", package: "stream"),
+                .target(name: "AsyncJSON"),
             ]),
+        .executableTarget(
+            name: "Benchmarks",
+            dependencies: [
+                .target(name: "JSON"),
+            ],
+            path: "./Benchmarks",
+        ),
     ]
 )
 
