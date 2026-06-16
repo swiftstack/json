@@ -24,14 +24,14 @@ struct JSONKeyedEncodingContainer<K: CodingKey>
             hasValues = true
             return
         }
-        encoder.storage.write(.comma)
+        try encoder.storage.write(.comma)
     }
 
     mutating func writeKey(_ key: String) throws {
-        encoder.storage.write(.quote)
-        encoder.storage.write(key)
-        encoder.storage.write(.quote)
-        encoder.storage.write(.colon)
+        try encoder.storage.write(.quote)
+        try encoder.storage.write(key)
+        try encoder.storage.write(.quote)
+        try encoder.storage.write(.colon)
     }
 
     var hasNested = false
@@ -46,7 +46,7 @@ struct JSONKeyedEncodingContainer<K: CodingKey>
         try closeNestedIfNeeded()
         try writeCommaIfNeeded()
         try writeKey(key.stringValue)
-        encoder.storage.write(.null)
+        try encoder.storage.write(.null)
     }
 
     mutating func encode(_ value: Bool, forKey key: K) throws {

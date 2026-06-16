@@ -5,7 +5,7 @@ import Stream
 
 @Test("Decoder KeyedContainer")
 func decoderKeyedContainer() async throws {
-    let stream = ByteArrayInputStream("""
+    let stream = MemoryStream("""
         {"answer":42}
         """)
     let value = try await JSON.Value.decode(from: stream)
@@ -20,7 +20,7 @@ func decoderKeyedContainer() async throws {
 
 @Test("Decoder UnkeyedContainer")
 func decoderUnkeyedContainer() async throws {
-    let stream = ByteArrayInputStream("[1,[2],[3],4]")
+    let stream = MemoryStream("[1,[2],[3],4]")
     let value = try await JSON.Value.decode(from: stream)
     let decoder = try JSON.Decoder(value)
     var container = try decoder.unkeyedContainer()
@@ -38,7 +38,7 @@ func decoderUnkeyedContainer() async throws {
 
 @Test("Decoder SingleValueContainer")
 func decoderSingleValueContainer() async throws {
-    let stream = ByteArrayInputStream("true")
+    let stream = MemoryStream("true")
     let value = try await JSON.Value.decode(from: stream)
     let decoder = try JSON.Decoder(value)
     let container = try decoder.singleValueContainer()

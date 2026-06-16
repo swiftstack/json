@@ -1,7 +1,7 @@
 import Stream
 
 extension Array where Element == JSON.Value {
-    public static func decode(from stream: ByteArrayInputStream) throws -> Self {
+    public static func decode(from stream: MemoryStream) throws -> Self {
         guard try stream.consume(.openBracket) else {
             throw JSON.Error.invalidJSON
         }
@@ -22,7 +22,7 @@ extension Array where Element == JSON.Value {
         return result
     }
 
-    public func encode(to stream: ByteArrayOutputStream) throws {
+    public func encode(to stream: MemoryStream) throws {
         try stream.write(.openBracket)
         var needComma = false
         for value in self {

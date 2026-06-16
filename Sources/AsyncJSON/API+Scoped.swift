@@ -4,26 +4,17 @@ import Stream
 // Encoder
 
 extension JSON {
-    public static func withScopedEncoder<T>(
+    public static func withScopedEncoder(
         using writer: StreamWriter,
-        _ body: (Encoder) async throws -> T
-    ) async throws -> T {
-        let stream = ByteArrayOutputStream()
+        _ body: (Encoder) async throws -> Void
+    ) async throws {
+        let stream = MemoryStream()
         let encoder = Encoder(stream)
-        let result = try await body(encoder)
+        try await body(encoder)
         try encoder.close()
-        try await writer.write(stream.bytes)
-        return result
-    }
-
-    public static func withScopedEncoder<T>(
-        using stream: ByteArrayOutputStream,
-        _ body: (Encoder) throws -> T
-    ) throws -> T {
-        let encoder = Encoder(stream)
-        let result = try body(encoder)
-        try encoder.close()
-        return result
+        try await stream.withUnsafeBufferPointer { buffer in
+            try await writer.write(buffer)
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import Stream
 
 extension Dictionary where Key == String, Value == JSON.Value {
-    public static func decode(from stream: ByteArrayInputStream) throws -> Self {
+    public static func decode(from stream: MemoryStream) throws -> Self {
         guard try stream.consume(.openBrace) else {
             throw JSON.Error.invalidJSON
         }
@@ -31,7 +31,7 @@ extension Dictionary where Key == String, Value == JSON.Value {
         return result
     }
 
-    public func encode(to stream: ByteArrayOutputStream) throws {
+    public func encode(to stream: MemoryStream) throws {
         try stream.write(.openBrace)
         for (key, value) in self {
             try stream.write(.quote)

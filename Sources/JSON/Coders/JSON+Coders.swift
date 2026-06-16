@@ -2,7 +2,7 @@ import Constants
 import Stream
 
 extension JSON.Value {
-    public static func decode(from stream: ByteArrayInputStream) throws -> Self {
+    public static func decode(from stream: MemoryStream) throws -> Self {
         try stream.consume(set: .whitespaces)
 
         func consume(_ value: [UInt8]) throws {
@@ -41,7 +41,7 @@ extension JSON.Value {
         }
     }
 
-    public func encode(to stream: ByteArrayOutputStream) throws {
+    public func encode(to stream: MemoryStream) throws {
         switch self {
         case .null:
             try stream.write(.null)

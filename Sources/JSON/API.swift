@@ -4,11 +4,11 @@ extension JSON {
     public static func encode<T: Encodable>(
         _ value: T
     ) throws -> [UInt8] {
-        let stream = ByteArrayOutputStream()
+        let stream = MemoryStream()
         let encoder = Encoder(stream)
         try value.encode(to: encoder)
         try encoder.close()
-        return stream.bytes
+        return stream.withUnsafeBufferPointer([UInt8].init)
     }
 
     public static func decode<T: Decodable>(
@@ -16,7 +16,7 @@ extension JSON {
         from json: [UInt8],
         options: Decoder.Options = .default
     ) throws -> T {
-        let stream = ByteArrayInputStream(json)
+        let stream = MemoryStream(json)
         let value = try JSON.Value.decode(from: stream)
         let decoder = try Decoder(value, options: options)
         return try T(from: decoder)
@@ -25,11 +25,11 @@ extension JSON {
     public static func encode(
         encodable value: Encodable
     ) throws -> [UInt8] {
-        let stream = ByteArrayOutputStream()
+        let stream = MemoryStream()
         let encoder = Encoder(stream)
         try value.encode(to: encoder)
         try encoder.close()
-        return stream.bytes
+        return stream.withUnsafeBufferPointer([UInt8].init)
     }
 
     public static func decode(
@@ -37,7 +37,7 @@ extension JSON {
         from json: [UInt8],
         options: Decoder.Options = .default
     ) throws -> Decodable {
-        let stream = ByteArrayInputStream(json)
+        let stream = MemoryStream(json)
         let value = try JSON.Value.decode(from: stream)
         let decoder = try Decoder(value, options: options)
         return try type.init(from: decoder)

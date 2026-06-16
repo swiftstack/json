@@ -2,7 +2,7 @@ import Constants
 import Stream
 
 extension String {
-    static func decode(from stream: ByteArrayInputStream) throws -> Self {
+    static func decode(from stream: MemoryStream) throws -> Self {
         guard try stream.consume(.quote) else {
             throw JSON.Error.invalidJSON
         }

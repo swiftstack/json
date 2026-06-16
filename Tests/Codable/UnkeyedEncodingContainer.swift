@@ -5,7 +5,7 @@ import Stream
 
 @Test("UnkeyedEncodingContainer")
 func unkeyedEncodingContainer() async throws {
-    let output = ByteArrayOutputStream()
+    let output = MemoryStream()
     let encoder = JSON.Encoder(output)
     var unkeyedContainer = encoder.unkeyedContainer()
     try unkeyedContainer.encode(1)
@@ -16,7 +16,7 @@ func unkeyedEncodingContainer() async throws {
 
 @Test("UnkeyedEncodingContainer.nestedUnkeyedContainer()")
 func nestedUnkeyedEncodingContainer() async throws {
-    let output = ByteArrayOutputStream()
+    let output = MemoryStream()
     let encoder = JSON.Encoder(output)
     var unkeyedContainer = encoder.unkeyedContainer()
     var nested1 = unkeyedContainer.nestedUnkeyedContainer()
@@ -29,7 +29,7 @@ func nestedUnkeyedEncodingContainer() async throws {
 
 @Test("UnkeyedEncodingContainer.encodeNil()")
 func nestedUnkeyedEncodingContainerEncodeNil() async throws {
-    let output = ByteArrayOutputStream()
+    let output = MemoryStream()
     let encoder = JSON.Encoder(output)
     var unkeyedContainer = encoder.unkeyedContainer()
     try unkeyedContainer.encodeNil()
