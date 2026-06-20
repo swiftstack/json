@@ -1,4 +1,4 @@
-@testable import JSON
+import JSON
 import Stream
 
 // Encoder

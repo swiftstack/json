@@ -1,6 +1,6 @@
-@testable import JSON
 import Constants
 import Stream
+import JSON
 
 extension String {
     static func decode(from stream: some StreamReader) async throws -> Self {

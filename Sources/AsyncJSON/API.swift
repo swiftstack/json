@@ -1,5 +1,4 @@
-@_exported import JSON
-@testable import JSON
+import JSON
 import Stream
 
 // MARK: generic
