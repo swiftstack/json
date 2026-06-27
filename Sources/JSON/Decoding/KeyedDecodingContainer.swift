@@ -4,13 +4,13 @@ struct JSONKeyedDecodingContainer<K: CodingKey>
         return []
     }
     var allKeys: [K] {
-        return object.keys.compactMap(Key.init)
+        return object.array.map(\.key).compactMap(Key.init)
     }
 
-    let object: [String: JSON.Value]
+    let object: JSON.Value.Object
     let options: JSON.Decoder.Options
 
-    init(_ object: [String: JSON.Value], _ options: JSON.Decoder.Options) {
+    init(_ object: JSON.Value.Object, _ options: JSON.Decoder.Options) {
         self.object = object
         self.options = options
     }

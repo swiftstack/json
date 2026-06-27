@@ -1,12 +1,12 @@
 import Stream
 
-extension Dictionary where Key == String, Value == JSON.Value {
+extension JSON.Value.Object {
     public static func decode(from stream: MemoryStream) throws -> Self {
         guard try stream.consume(.openBrace) else {
             throw JSON.Error.invalidJSON
         }
 
-        var result = [String: JSON.Value]()
+        var result = JSON.Value.Object()
         loop: while true {
             try stream.consume(set: .whitespaces)
 
@@ -21,7 +21,8 @@ extension Dictionary where Key == String, Value == JSON.Value {
                     throw JSON.Error.invalidJSON
                 }
                 try stream.consume(set: .whitespaces)
-                result[key] = try JSON.Value.decode(from: stream)
+                let value = try JSON.Value.decode(from: stream)
+                result.append(key: key, value: value)
             case .comma:
                 try stream.consume(count: 1)
             default:
@@ -33,12 +34,12 @@ extension Dictionary where Key == String, Value == JSON.Value {
 
     public func encode(to stream: MemoryStream) throws {
         try stream.write(.openBrace)
-        for (key, value) in self {
+        for element in array {
             try stream.write(.quote)
-            try stream.write(key)
+            try stream.write(element.key)
             try stream.write(.quote)
             try stream.write(.colon)
-            try value.encode(to: stream)
+            try element.value.encode(to: stream)
         }
         try stream.write(.closeBrace)
     }

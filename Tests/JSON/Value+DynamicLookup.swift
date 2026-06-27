@@ -10,7 +10,14 @@ func dynamicLookupGet() async throws {
 
 @Test("DynamicLookup set")
 func dynamicLookupSet() async throws {
-    var value = JSON.Value.null
+    var value = JSON.Value.object([:])
     value.key = .string("value")
     #expect(value == .object(["key": .string("value")]))
+}
+
+@Test("DynamicLookup invalid type")
+func dynamicLookupInvalidType() async throws {
+    var value = JSON.Value.number(.uint(42))
+    value.key = .string("value")
+    #expect(value == .number(.uint(42)))
 }

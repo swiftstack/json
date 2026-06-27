@@ -13,7 +13,7 @@ extension JSON.Value {
 
         switch try stream.peek() {
         case .openBrace:
-            return .object(try [String: JSON.Value].decode(from: stream))
+            return .object(try JSON.Value.Object.decode(from: stream))
 
         case .openBracket:
             return .array(try [JSON.Value].decode(from: stream))

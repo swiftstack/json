@@ -1,6 +1,10 @@
 import Stream
 
-public struct JSON {
+public enum JSON {}
+
+// MARK: JSON.Value
+
+extension JSON {
     @dynamicMemberLookup
     public enum Value: Sendable {
         case null
@@ -8,19 +12,13 @@ public struct JSON {
         case number(Number)
         case string(String)
         case array([JSON.Value])
-        case object([String: JSON.Value])
-
-        public enum Number: Sendable {
-            case int(Int)
-            case uint(UInt)
-            case double(Double)
-        }
+        case object(Object)
 
         public subscript(dynamicMember member: String) -> Value? {
             get {
                 switch self {
-                case .object(let object): return object[member]
-                default: return nil
+                case .object(let object): object[member]
+                default: nil
                 }
             }
             set {
@@ -29,14 +27,75 @@ public struct JSON {
                     object[member] = newValue
                     self = .object(object)
                 default:
-                    switch newValue {
-                    case .some(let value):
-                        self = .object([member: value])
-                    case .none:
-                        self = .object([:])
+                    break
+                }
+            }
+        }
+    }
+}
+
+// MARK: JSON.Value.Number
+
+extension JSON.Value {
+    public enum Number: Sendable {
+        case int(Int)
+        case uint(UInt)
+        case double(Double)
+    }
+}
+
+// MARK: JSON.Value.Object
+
+extension JSON.Value {
+    @dynamicMemberLookup
+    public struct Object: Sendable {
+        public struct Element: Sendable, Equatable {
+            let key: String
+            let value: JSON.Value
+
+            init(key: String, value: JSON.Value) {
+                self.key = key
+                self.value = value
+            }
+
+            init(_ keyValue: (String, JSON.Value)) {
+                self.key = keyValue.0
+                self.value = keyValue.1
+            }
+        }
+
+        var array: [Element]
+
+        public init(_ array: [Element] = []) {
+            self.array = array
+        }
+
+        public subscript(_ key: String) -> JSON.Value? {
+            get {
+                array.first(where: { $0.key == key})?.value
+            }
+            set {
+                if let index = array.firstIndex(where: { $0.key == key}) {
+                    if let newValue {
+                        array[index] = .init((key, newValue))
+                    } else {
+                        array.remove(at: index)
+                    }
+                } else {
+                    if let newValue {
+                        array.append(.init((key, newValue)))
                     }
                 }
             }
+        }
+
+        public subscript(dynamicMember member: String) -> JSON.Value? {
+            get { self[member] }
+            set { self[member] = newValue }
+        }
+
+        public mutating func append(key: String, value: JSON.Value) {
+            self.array.append(.init(key: key, value: value))
         }
     }
 }
@@ -93,5 +152,28 @@ extension JSON.Value.Number: CustomStringConvertible {
         case .uint(let uint): return uint.description
         case .double(let double): return double.description
         }
+    }
+}
+
+// MARK: JSON.Object
+
+extension JSON.Value.Object: Equatable {
+    public static func == (
+        lhs: JSON.Value.Object,
+        rhs: JSON.Value.Object
+    ) -> Bool {
+        lhs.array == rhs.array
+    }
+}
+
+extension JSON.Value.Object: CustomStringConvertible {
+    public var description: String {
+        array.description
+    }
+}
+
+extension JSON.Value.Object: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (String, JSON.Value)...) {
+        self.array = elements.map(Element.init)
     }
 }
