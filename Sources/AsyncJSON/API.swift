@@ -3,6 +3,8 @@ import Stream
 
 // MARK: generic
 
+public typealias JSON = JSON::JSON
+
 extension JSON {
     public static func encode<Model: Encodable>(
         _ value: Model,
