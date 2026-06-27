@@ -1,7 +1,7 @@
 import Testing
 import Stream
 // don't use @testable
-import AsyncJSON
+import JSON
 
 @Test("withScopedEncoder")
 func withScopedEncoder() async throws {

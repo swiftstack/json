@@ -14,9 +14,6 @@ let package = Package(
         .library(
             name: "JSON",
             targets: ["JSON"]),
-        .library(
-            name: "AsyncJSON",
-            targets: ["AsyncJSON"]),
     ],
     dependencies: [
         .package(
@@ -46,20 +43,10 @@ let package = Package(
             swiftSettings: [
                 .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
-        .target(
-            name: "AsyncJSON",
-            dependencies: [
-                .target(name: "JSON"),
-                .product(name: "Stream", package: "stream"),
-            ],
-            swiftSettings: [
-                .treatWarning("EmbeddedRestrictions", as: .error)
-            ]),
         .testTarget(
             name: "Tests",
             dependencies: [
                 .target(name: "JSON"),
-                .target(name: "AsyncJSON"),
             ]),
         .executableTarget(
             name: "Benchmarks",

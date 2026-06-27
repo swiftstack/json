@@ -1,11 +1,10 @@
-import JSON
 import Stream
 
 // Encoder
 
 extension JSON {
     public static func withScopedEncoder(
-        using writer: StreamWriter,
+        using writer: MemoryStream,
         _ body: (Encoder) async throws -> Void
     ) async throws {
         let stream = MemoryStream()
@@ -23,11 +22,11 @@ extension JSON {
 extension JSON {
     // FIXME: currently pointless, designed for future lazy reading
     public static func withScopedDecoder<T>(
-        using reader: some StreamReader,
+        using reader: some MemoryStream,
         options: JSON.Decoder.Options = .default,
         _ body: (Decoder) throws -> T
-    ) async throws -> T {
-        let json = try await JSON.Value.decode(from: reader)
+    ) throws -> T {
+        let json = try JSON.Value.decode(from: reader)
         let decoder = try Decoder(json, options: options)
         let result = try body(decoder)
         try decoder.close()
